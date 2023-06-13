@@ -4,6 +4,10 @@
 
 <br/>
 
+
+https://github.com/autonomousvision/nuplan_garage/assets/22528226/d2d4d7f5-b4ed-4fcc-a430-18363e928ef0
+
+
 <br/>
 
 > [**Parting with Misconceptions about Learning-based Vehicle Motion Planning**](https://arxiv.org/abs/)
@@ -38,7 +42,7 @@
 > We decompose the process of determining a safe and comfortable trajectory into two sub-tasks: (1) planning the short-term motion, and (2) accurately forecasting the long-term ego trajectory. While the former primarily impacts closed-loop performance, the latter is essential for the open-loop task. Our method employs a rule-based predictive planner to generate a trajectory proposal, and a learned ego-forecasting module that refines the trajectory with a particular emphasis on long-term forecasting.
 
 <div align="center">
-<img src="./assets/framework.pdf" />
+<img src="./assets/framework.png" />
 </div>
 
 
