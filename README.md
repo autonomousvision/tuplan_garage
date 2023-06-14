@@ -1,6 +1,6 @@
 # nuPlan Garage
 
-## [Paper]() | [Supplementary]() | [Video]() | [Talk]() | [Slides]()
+## [Paper](https://arxiv.org/pdf/2306.07962.pdf) | Supplementary | Video | Talk | Slides
 
 <br/>
 
@@ -10,7 +10,7 @@ https://github.com/autonomousvision/nuplan_garage/assets/22528226/d2d4d7f5-b4ed-
 
 <br/>
 
-> [**Parting with Misconceptions about Learning-based Vehicle Motion Planning**](https://arxiv.org/abs/)
+> [**Parting with Misconceptions about Learning-based Vehicle Motion Planning**](https://arxiv.org/abs/2306.07962)
 >
 > [Daniel Dauner](https://danieldauner.github.io/)<sup>1,2</sup>, [Marcel Hallgarten](https://mh0797.github.io/)<sup>1,3</sup>, [Andreas Geiger](https://www.cvlibs.net/)<sup>1,2</sup>, and [Kashyap Chitta](https://kashyap7x.github.io/)<sup>1,2</sup>
 > 
@@ -19,7 +19,7 @@ https://github.com/autonomousvision/nuplan_garage/assets/22528226/d2d4d7f5-b4ed-
 
 
 ## News
-* **`14 Jun, 2023`:** We released our paper on [Arxiv](https://arxiv.org/abs/). Code and models are coming soon, please stay tuned!
+* **`14 Jun, 2023`:** We released our paper on [arXiv](https://arxiv.org/abs/2306.07962). Code and models are coming soon, please stay tuned!
 * **`2 Jun, 2023`:** Our approach won the [2023 nuPlan Challenge](https://opendrivelab.com/AD23Challenge.html#nuplan_planning)!
 
 
@@ -47,7 +47,7 @@ https://github.com/autonomousvision/nuplan_garage/assets/22528226/d2d4d7f5-b4ed-
 
 
 ## Results
-Planning results on the proposed *Val14* benchmark. Please refer to the [paper](https://arxiv.org/abs/) for more details.
+Planning results on the proposed *Val14* benchmark. Please refer to the [paper](https://arxiv.org/abs/2306.07962) for more details.
 
 | **Method**        | **Representation**     | **CLS-R ↑** | **CLS-NR ↑** | **OLS ↑**  | **Time (ms) ↓** |
 |-------------------|--------------|------------|--------------|------------|------------|
@@ -82,7 +82,7 @@ If you find nuPlan garage useful, please consider giving us a star &#127775; and
   title={Parting with Misconceptions about Learning-based Vehicle Motion Planning},
   author={Dauner, Daniel and Hallgarten, Marcel and Geiger, Andreas and Chitta, Kashyap},
   journal={arXiv},
-  volume={},
+  volume={2306.07962},
   year={2023}
 }
 ```
