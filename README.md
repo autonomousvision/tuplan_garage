@@ -1,14 +1,13 @@
 # nuPlan Garage
 
-## [Paper](https://arxiv.org/pdf/2306.07962.pdf) | Supplementary | Video | Talk | Slides
+[![Paper page](https://huggingface.co/datasets/huggingface/badges/raw/main/paper-page-sm.svg)](https://huggingface.co/papers/2306.07962)
+
+## [PDF](https://arxiv.org/pdf/2306.07962.pdf) | Supplementary | Video | Talk | Slides
+
 
 <br/>
 
-
-
 https://github.com/autonomousvision/nuplan_garage/assets/22528226/f91e9ce2-ae3d-4f1e-933e-d48ee5762497
-
-
 
 <br/>
 
