@@ -4,6 +4,9 @@
 
 ## [PDF](https://arxiv.org/pdf/2306.07962.pdf) | Supplementary | Video | Talk | Slides
 
+<br/>
+
+> This repo is intended to serve as a starting point for vehicle motion planning research on [nuPlan](https://github.com/motional/nuplan-devkit). We will provide a publicly accesible configuration for validation, comprehensive set of baselines, and pre-trained planning models.
 
 <br/>
 
@@ -25,7 +28,6 @@ https://github.com/autonomousvision/nuplan_garage/assets/22528226/f91e9ce2-ae3d-
 
 
 ## Overview
-> This repo is intended to serve as a starting point for vehicle motion planning research on [nuPlan](https://github.com/motional/nuplan-devkit). We will provide a publicly accesible configuration for validation, comprehensive set of baselines, and pre-trained planning models.
 
 - The release of nuPlan marks a new era in vehicle motion planning research, offering the first large-scale real-world dataset and evaluation schemes requiring both precise short-term planning and long-horizon ego-forecasting. Existing systems struggle to simultaneously meet both requirements.
 
