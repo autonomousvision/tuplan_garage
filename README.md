@@ -5,7 +5,9 @@
 <br/>
 
 
-https://github.com/autonomousvision/nuplan_garage/assets/22528226/d2d4d7f5-b4ed-4fcc-a430-18363e928ef0
+
+https://github.com/autonomousvision/nuplan_garage/assets/22528226/f91e9ce2-ae3d-4f1e-933e-d48ee5762497
+
 
 
 <br/>
