@@ -68,8 +68,10 @@ Planning results on the proposed *Val14* benchmark. Please refer to the [paper](
 ## To Do
 - [ ] Additional baselines
 - [ ] ML planners code & checkpoints
-- [ ] Val14 benchmark & PDM-Closed release (~18.06.23)
-- [ ] Supplementary material, video, slides (~18.06.23)
+- [ ] Supplementary material, video, slides
+- [ ] Val14 benchmark 
+- [ ] Installation tutorial
+- [x] PDM-Closed release
 - [x] Initial repo & main paper
 
 
