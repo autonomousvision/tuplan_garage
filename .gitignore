@@ -6,3 +6,6 @@
 
 # IDE
 .vscode/*
+
+# Pip
+*.egg-info
