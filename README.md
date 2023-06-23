@@ -2,7 +2,7 @@
 
 [![Paper page](https://huggingface.co/datasets/huggingface/badges/raw/main/paper-page-sm.svg)](https://huggingface.co/papers/2306.07962)
 
-## [PDF](https://arxiv.org/pdf/2306.07962.pdf) | Supplementary | Video | Talk | Slides
+## [PDF](https://arxiv.org/pdf/2306.07962.pdf) | Supplementary | Video | [Talk](https://youtu.be/ZwhXilQKULY?t=1975) | Slides
 
 <br/>
 
@@ -69,11 +69,45 @@ Planning results on the proposed *Val14* benchmark. Please refer to the [paper](
 - [ ] Additional baselines
 - [ ] ML planners code & checkpoints
 - [ ] Supplementary material, video, slides
-- [ ] Val14 benchmark 
-- [ ] Installation tutorial
+- [x] Val14 benchmark 
+- [x] Installation tutorial
 - [x] PDM-Closed release
 - [x] Initial repo & main paper
 
+
+## Getting started
+
+### 1. Installation
+To install the nuPlan garage, please follow these steps
+- setup the nuPlan dataset ([described here](https://nuplan-devkit.readthedocs.io/en/latest/dataset_setup.html)) and install the nuPlan devkit ([see here](https://nuplan-devkit.readthedocs.io/en/latest/installation.html))
+- download the nuPlan Garage and move inside the folder
+```
+git clone https://github.com/autonomousvision/nuplan_garage.git && cd nuplan_garage
+```
+- make sure the environment you created when installing the nuplan-devkit is activated
+```
+conda activate nuplan
+```
+- install the local nuplan_garage as a PIP package
+```
+pip install -e .
+```
+
+### 2. Running a training
+TBD
+
+### 3. Running an evaluation
+When running an evaluation, you have to add the `hydra.searchpath` for the `nuplan_garage` correctly.
+Note: since hydra does not yet support appending to lists ([see here](https://github.com/facebookresearch/hydra/issues/1547)), you have to add the original searchpaths in the override.
+The example below runs an evaluation of the `pdm_closed_planner` on the `val14_split`, both of which are part of the nuplan_garage
+```
+python /path/to/nuplan/nuplan-devkit/nuplan/planning/script/run_simulation.py \
++simulation=closed_loop_nonreactive_agents \
+planner=pdm_closed_planner \
+scenario_filter=val14_split \
+scenario_builder=nuplan \
+hydra.searchpath="[pkg://nuplan_garage.planning.script.config.common, pkg://nuplan_garage.planning.script.config.simulation, pkg://nuplan.planning.script.config.common, pkg://nuplan.planning.script.experiments]"
+```
 
 ## Contact
 If you have any questions or suggestions, please feel free to open an issue or contact us (kashyap.chitta@uni-tuebingen.de).
