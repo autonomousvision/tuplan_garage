@@ -102,7 +102,7 @@ Note: since hydra does not yet support appending to lists ([see here](https://gi
 The example below runs an evaluation of the `pdm_closed_planner` on the `val14_split`, both of which are part of the nuplan_garage
 ```
 python /path/to/nuplan/nuplan-devkit/nuplan/planning/script/run_simulation.py \
-simulation=closed_loop_nonreactive_agents \
++simulation=closed_loop_nonreactive_agents \
 planner=pdm_closed_planner \
 scenario_filter=val14_split \
 scenario_builder=nuplan \
