@@ -2,7 +2,7 @@
 
 [![Paper page](https://huggingface.co/datasets/huggingface/badges/raw/main/paper-page-sm.svg)](https://huggingface.co/papers/2306.07962)
 
-## [PDF](https://arxiv.org/pdf/2306.07962.pdf) | Supplementary | Video | Talk | Slides
+## [PDF](https://arxiv.org/pdf/2306.07962.pdf) | Supplementary | Video | [Talk](https://youtu.be/ZwhXilQKULY?t=1975) | Slides
 
 <br/>
 
@@ -74,6 +74,22 @@ Planning results on the proposed *Val14* benchmark. Please refer to the [paper](
 - [x] PDM-Closed release
 - [x] Initial repo & main paper
 
+
+## Getting started
+To install the nuPlan garage, please follow these steps
+- setup the nuPlan dataset ([described here](https://nuplan-devkit.readthedocs.io/en/latest/dataset_setup.html)) and install the nuPlan devkit ([see here](https://nuplan-devkit.readthedocs.io/en/latest/installation.html))
+- download the nuPlan Garage and move inside the folder
+```
+git clone https://github.com/autonomousvision/nuplan_garage.git && cd nuplan_garage
+```
+- make sure the environment you created when installing the nuplan-devkit is activated
+```
+conda activate nuplan
+```
+- install the local nuplan_garage as a PIP package
+```
+pip install -e .
+```
 
 ## Contact
 If you have any questions or suggestions, please feel free to open an issue or contact us (kashyap.chitta@uni-tuebingen.de).
