@@ -1,8 +1,8 @@
-# nuPlan Garage
-
-[![Paper page](https://huggingface.co/datasets/huggingface/badges/raw/main/paper-page-sm.svg)](https://huggingface.co/papers/2306.07962)
-
-## [PDF](https://arxiv.org/pdf/2306.07962.pdf) | Supplementary | Video | [Talk](https://youtu.be/ZwhXilQKULY?t=1975) | Slides
+<p align="center">
+    <img alt="nuplangarage" src="assets/nuplan_garage_white.png" width="500">
+    <h1 align="center">A Framework for Vehicle Motion Planning</h1>
+    <h3 align="center"><a href="https://arxiv.org/pdf/2306.07962.pdf">PDF</a> | <a href="https://danieldauner.github.io/assets/pdf/suppmat/suppmat_dauner2023parting.pdf">Supplementary</a> | <a href="https://youtu.be/ZwhXilQKULY?t=1975">Talk</a> | <a href="https://danieldauner.github.io/assets/pdf/slides/slides_dauner2023parting.pdf">Slides</a> | <a href="https://youtu.be/oIOYQAR5P4w">Video</a> </h3>
+</p>
 
 <br/>
 
@@ -12,7 +12,14 @@
 
 https://github.com/autonomousvision/nuplan_garage/assets/22528226/f91e9ce2-ae3d-4f1e-933e-d48ee5762497
 
+## News
+* **`26 Jun, 2023`:** We released our [supplementary material](https://danieldauner.github.io/assets/pdf/suppmat/suppmat_dauner2023parting.pdf) and the code for PDM-Closed. Code and models for the ML planners are coming soon, please stay tuned!
+* **`14 Jun, 2023`:** We released our paper on [arXiv](https://arxiv.org/abs/2306.07962). 
+* **`2 Jun, 2023`:** Our approach won the [2023 nuPlan Challenge](https://opendrivelab.com/AD23Challenge.html#nuplan_planning)!
+
 <br/>
+
+## Overview
 
 > [**Parting with Misconceptions about Learning-based Vehicle Motion Planning**](https://arxiv.org/abs/2306.07962)
 >
@@ -20,14 +27,6 @@ https://github.com/autonomousvision/nuplan_garage/assets/22528226/f91e9ce2-ae3d-
 > 
 > <sup>1</sup> University of Tübingen, <sup>2</sup> Tübingen AI Center, <sup>3</sup> Robert Bosch GmbH
 >
-
-
-## News
-* **`14 Jun, 2023`:** We released our paper on [arXiv](https://arxiv.org/abs/2306.07962). Code and models are coming soon, please stay tuned!
-* **`2 Jun, 2023`:** Our approach won the [2023 nuPlan Challenge](https://opendrivelab.com/AD23Challenge.html#nuplan_planning)!
-
-
-## Overview
 
 - The release of nuPlan marks a new era in vehicle motion planning research, offering the first large-scale real-world dataset and evaluation schemes requiring both precise short-term planning and long-horizon ego-forecasting. Existing systems struggle to simultaneously meet both requirements.
 
@@ -39,6 +38,7 @@ https://github.com/autonomousvision/nuplan_garage/assets/22528226/f91e9ce2-ae3d-
 
 - Combining these insights, we propose an extremely simple and efficient planner which outperforms an extensive set of competitors, winning the nuPlan planning challenge 2023.
 
+<br/>
 
 ## Method
 
@@ -68,7 +68,7 @@ Planning results on the proposed *Val14* benchmark. Please refer to the [paper](
 ## To Do
 - [ ] Additional baselines
 - [ ] ML planners code & checkpoints
-- [ ] Supplementary material, video, slides
+- [x] Supplementary material, video, slides
 - [x] Val14 benchmark 
 - [x] Installation tutorial
 - [x] PDM-Closed release
@@ -78,9 +78,9 @@ Planning results on the proposed *Val14* benchmark. Please refer to the [paper](
 ## Getting started
 
 ### 1. Installation
-To install the nuPlan garage, please follow these steps
+To install nuPlan garage, please follow these steps: 
 - setup the nuPlan dataset ([described here](https://nuplan-devkit.readthedocs.io/en/latest/dataset_setup.html)) and install the nuPlan devkit ([see here](https://nuplan-devkit.readthedocs.io/en/latest/installation.html))
-- download the nuPlan Garage and move inside the folder
+- download nuPlan Garage and move inside the folder
 ```
 git clone https://github.com/autonomousvision/nuplan_garage.git && cd nuplan_garage
 ```
@@ -88,15 +88,15 @@ git clone https://github.com/autonomousvision/nuplan_garage.git && cd nuplan_gar
 ```
 conda activate nuplan
 ```
-- install the local nuplan_garage as a PIP package
+- install the local nuplan_garage as a pip package
 ```
 pip install -e .
 ```
 
-### 2. Running a training
-TBD
+### 2. Training
+Coming soon!
 
-### 3. Running an evaluation
+### 3. Evaluation
 When running an evaluation, you have to add the `hydra.searchpath` for the `nuplan_garage` correctly.
 Note: since hydra does not yet support appending to lists ([see here](https://github.com/facebookresearch/hydra/issues/1547)), you have to add the original searchpaths in the override.
 The example below runs an evaluation of the `pdm_closed_planner` on the `val14_split`, both of which are part of the nuplan_garage
