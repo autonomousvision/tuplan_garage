@@ -94,18 +94,19 @@ pip install -e .
 ```
 - add the following environment variable to your `~/.bashrc`
 ```
-NUPLAN_DEVKIT_ROOT="$HOME/nuplan/"
+NUPLAN_DEVKIT_ROOT="$HOME/nuplan-devkit/"
 ```
 
 ### 2. Training
 When running a training, you have to add the `hydra.searchpath` for the `nuplan_garage` correctly.
 Note: since hydra does not yet support appending to lists ([see here](https://github.com/facebookresearch/hydra/issues/1547)), you have to add the original searchpaths in the override.
 The following example runs a training for the `pdm_open` model
-python $NUPLAN_DEVKIT_ROOT/nuplan-devkit/nuplan/planning/script/run_training.py \
+```
+python $NUPLAN_DEVKIT_ROOT/nuplan/planning/script/run_training.py \
 +training=training_pdm_open_model \
 job_name="training_pdm_open_model" \
 hydra.searchpath="[pkg://nuplan_garage.planning.script.config.common, pkg://nuplan_garage.planning.script.experiments, pkg://nuplan.planning.script.config.common, pkg://nuplan.planning.script.experiments]"
-
+```
 Training scripts can be run with the scripts found in `/scripts/training/`.
 Before training from an already existing cache, please check [this](https://github.com/motional/nuplan-devkit/issues/128) issue.
 
@@ -113,7 +114,7 @@ Before training from an already existing cache, please check [this](https://gith
 Same as for the training, when running an evaluation, you have to add the `hydra.searchpath` for the `nuplan_garage` correctly.
 The example below runs an evaluation of the `pdm_closed_planner` on the `val14_split`, both of which are part of the nuplan_garage
 ```
-python $NUPLAN_DEVKIT_ROOT/nuplan-devkit/nuplan/planning/script/run_simulation.py \
+python $NUPLAN_DEVKIT_ROOT/nuplan/planning/script/run_simulation.py \
 +simulation=closed_loop_nonreactive_agents \
 planner=pdm_closed_planner \
 scenario_filter=val14_split \

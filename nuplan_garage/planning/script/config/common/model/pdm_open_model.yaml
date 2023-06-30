@@ -4,14 +4,14 @@ _convert_: 'all'
 trajectory_sampling:
   _target_: nuplan.planning.simulation.trajectory.trajectory_sampling.TrajectorySampling
   _convert_: 'all'
-  num_poses: 16      # target future poses
-  interval_length: 0.5 
+  num_poses: 16 # target future poses
+  interval_length: 0.5 # interval of samples [s]
 
 history_sampling:
   _target_: nuplan.planning.simulation.trajectory.trajectory_sampling.TrajectorySampling
   _convert_: 'all'
-  num_poses: 10      # target future poses
-  interval_length: 0.2  
+  num_poses: 10 # target future poses
+  interval_length: 0.2  # interval of samples [s]
 
 planner:
   _target_: nuplan_garage.planning.simulation.planner.pdm_planner.pdm_closed_planner.PDMClosedPlanner

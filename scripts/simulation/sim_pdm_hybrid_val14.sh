@@ -1,4 +1,4 @@
-python $NUPLAN_DEVKIT_ROOT/nuplan-devkit/nuplan/planning/script/run_simulation.py \
+python $NUPLAN_DEVKIT_ROOT/nuplan/planning/script/run_simulation.py \
 +simulation=closed_loop_nonreactive_agents \
 planner=pdm_hybrid_planner \
 scenario_filter=val14_split \
