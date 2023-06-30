@@ -13,6 +13,8 @@ from nuplan.common.maps.abstract_map_objects import LaneGraphEdgeMapObject
 from nuplan.common.maps.maps_datatypes import SemanticMapLayer
 from nuplan.planning.metrics.utils.collision_utils import CollisionType
 from nuplan.planning.simulation.observation.idm.utils import is_agent_ahead, is_agent_behind
+from nuplan.planning.simulation.trajectory.trajectory_sampling import TrajectorySampling
+
 from nuplan_garage.planning.simulation.planner.pdm_planner.observation.pdm_observation import (
     PDMObservation,
 )
@@ -55,21 +57,20 @@ PROGRESS_DISTANCE_THRESHOLD = 0.1  # [m] (progress)
 class PDMScorer:
     """Class to score proposals in PDM pipeline. Re-implements nuPlan's closed-loop metrics."""
 
-    def __init__(self, proposal_samples: int, sample_interval: float):
+    def __init__(self, proposal_sampling: TrajectorySampling):
         """
         Constructor of PDMScorer
-        :param proposal_samples: number of proposal samples
-        :param sample_interval: interval of proposal samples [s]
+        :param proposal_sampling: Sampling parameters for proposals
         """
-        self._proposal_samples: int = proposal_samples
-        self._sample_interval: float = sample_interval
+        self._proposal_sampling = proposal_sampling
 
         # lazy loaded
-        self._map_api: Optional[AbstractMap] = None
         self._initial_ego_state: Optional[EgoState] = None
         self._observation: Optional[PDMObservation] = None
         self._centerline: Optional[PDMPath] = None
         self._route_lane_dict: Optional[Dict[str, LaneGraphEdgeMapObject]] = None
+        self._drivable_area_map: Optional[PDMOccupancyMap] = None
+        self._map_api: Optional[AbstractMap] = None
 
         self._num_proposals: Optional[int] = None
         self._states: Optional[npt.NDArray[np.float64]] = None
@@ -91,7 +92,7 @@ class PDMScorer:
         :param proposal_idx: index for proposal
         :return: time to infraction
         """
-        return self._collision_time_idcs[proposal_idx] * self._sample_interval
+        return self._collision_time_idcs[proposal_idx] * self._proposal_sampling.interval_length
 
     def time_to_ttc_infraction(self, proposal_idx: int) -> float:
         """
@@ -99,7 +100,7 @@ class PDMScorer:
         :param proposal_idx: index for proposal
         :return: time to infraction
         """
-        return self._ttc_time_idcs[proposal_idx] * self._sample_interval
+        return self._ttc_time_idcs[proposal_idx] * self._proposal_sampling.interval_length
 
     def score_proposals(
         self,
@@ -108,6 +109,7 @@ class PDMScorer:
         observation: PDMObservation,
         centerline: PDMPath,
         route_lane_dict: Dict[str, LaneGraphEdgeMapObject],
+        drivable_area_map: PDMOccupancyMap,
         map_api: AbstractMap,
     ) -> npt.NDArray[np.float64]:
         """
@@ -117,12 +119,21 @@ class PDMScorer:
         :param observation: PDM's observation class
         :param centerline: path of the centerline
         :param route_lane_dict: dictionary containing on-route lanes
+        :param drivable_area_map: Occupancy map of drivable are polygons
         :param map_api: map object
         :return: array containing score of each proposal
-        """
+        """        
 
         # initialize & lazy load class values
-        self._reset(states, initial_ego_state, observation, centerline, route_lane_dict, map_api)
+        self._reset(
+            states,
+            initial_ego_state,
+            observation,
+            centerline,
+            route_lane_dict,
+            drivable_area_map,
+            map_api,
+        )
 
         # fill value ego-area array (used across multiple metrics)
         self._calculate_ego_area()
@@ -176,6 +187,7 @@ class PDMScorer:
         observation: PDMObservation,
         centerline: PDMPath,
         route_lane_dict: Dict[str, LaneGraphEdgeMapObject],
+        drivable_area_map: PDMOccupancyMap,
         map_api: AbstractMap,
     ) -> None:
         """
@@ -185,16 +197,18 @@ class PDMScorer:
         :param observation: PDM's observation class
         :param centerline: path of the centerline
         :param route_lane_dict: dictionary containing on-route lanes
+        :param drivable_area_map: Occupancy map of drivable are polygons
         :param map_api: map object
         """
         assert states.ndim == 3
-        assert states.shape[1] == self._proposal_samples + 1
+        assert states.shape[1] == self._proposal_sampling.num_poses + 1
         assert states.shape[2] == StateIndex.size()
 
         self._initial_ego_state = initial_ego_state
         self._observation = observation
         self._centerline = centerline
         self._route_lane_dict = route_lane_dict
+        self._drivable_area_map = drivable_area_map
         self._map_api = map_api
 
         self._num_proposals = states.shape[0]
@@ -212,7 +226,8 @@ class PDMScorer:
 
         # zero initialize all remaining arrays.
         self._ego_areas = np.zeros(
-            (self._num_proposals, self._proposal_samples + 1, len(EgoAreaIndex)), dtype=np.bool_
+            (self._num_proposals, self._proposal_sampling.num_poses + 1, len(EgoAreaIndex)),
+            dtype=np.bool_,
         )
         self._multi_metrics = np.zeros(
             (len(MultiMetricIndex), self._num_proposals), dtype=np.float64
@@ -237,16 +252,16 @@ class PDMScorer:
         n_proposals, n_horizon, n_points, _ = self._ego_coords.shape
         coordinates = self._ego_coords.reshape(n_proposals * n_horizon * n_points, 2)
 
-        in_polygons = self._observation.drivable_area_map.points_in_polygons(coordinates)
+        in_polygons = self._drivable_area_map.points_in_polygons(coordinates)
         in_polygons = in_polygons.reshape(
-            len(self._observation.drivable_area_map), n_proposals, n_horizon, n_points
+            len(self._drivable_area_map), n_proposals, n_horizon, n_points
         ).transpose(
             1, 2, 0, 3
         )  # shape: n_proposals, n_horizon, n_polygons, n_points
 
         drivable_area_on_route_idcs: List[int] = [
             idx
-            for idx, token in enumerate(self._observation.drivable_area_map.tokens)
+            for idx, token in enumerate(self._drivable_area_map.tokens)
             if token in self._route_lane_dict.keys()
         ]  # index mask for on-route lanes
 
@@ -288,7 +303,7 @@ class PDMScorer:
             for proposal_idx in range(self._num_proposals)
         }
 
-        for time_idx in range(self._proposal_samples + 1):
+        for time_idx in range(self._proposal_sampling.num_poses + 1):
             ego_polygons = self._ego_polygons[:, time_idx]
             intersecting = self._observation[time_idx].query(ego_polygons, predicate="intersects")
 
@@ -379,7 +394,7 @@ class PDMScorer:
         )
 
         for idx, future_time_idx in enumerate(future_time_idcs):
-            delta_t = float(future_time_idx) * self._sample_interval
+            delta_t = float(future_time_idx) * self._proposal_sampling.interval_length
             coords_exterior_time_steps[:, :, idx] = (
                 coords_exterior_time_steps[:, :, idx] + dxy_per_s[:, :, None] * delta_t
             )
@@ -387,7 +402,7 @@ class PDMScorer:
         polygons = creation.polygons(coords_exterior_time_steps)
 
         # check collision for each proposal and projection
-        for time_idx in range(self._proposal_samples + 1):
+        for time_idx in range(self._proposal_sampling.num_poses + 1):
             for step_idx, future_time_idx in enumerate(future_time_idcs):
                 current_time_idx = time_idx + future_time_idx
                 polygons_at_time_step = polygons[:, time_idx, step_idx]
@@ -457,7 +472,8 @@ class PDMScorer:
         Re-implementation of nuPlan's comfortability metric.
         """
         time_point_s: npt.NDArray[np.float64] = (
-            np.arange(0, self._proposal_samples + 1).astype(np.float64) * self._sample_interval
+            np.arange(0, self._proposal_sampling.num_poses + 1).astype(np.float64)
+            * self._proposal_sampling.interval_length
         )
         is_comfortable = ego_is_comfortable(self._states, time_point_s)
         self._weighted_metrics[WeightedMetricIndex.COMFORTABLE] = np.all(is_comfortable, axis=-1)
@@ -476,7 +492,9 @@ class PDMScorer:
         Re-implementation of nuPlan's driving direction compliance metric
         """
         center_coordinates = self._ego_coords[:, :, BBCoordsIndex.CENTER]
-        cum_progress = np.zeros((self._num_proposals, self._proposal_samples + 1), dtype=np.float64)
+        cum_progress = np.zeros(
+            (self._num_proposals, self._proposal_sampling.num_poses + 1), dtype=np.float64
+        )
         cum_progress[:, 1:] = ((center_coordinates[:, 1:] - center_coordinates[:, :-1]) ** 2.0).sum(
             axis=-1
         ) ** 0.5

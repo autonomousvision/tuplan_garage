@@ -6,8 +6,10 @@ import numpy.typing as npt
 from nuplan.common.actor_state.ego_state import EgoState
 from nuplan.common.actor_state.state_representation import StateSE2, StateVector2D, TimePoint
 from nuplan.common.geometry.convert import relative_to_absolute_poses
-from nuplan_garage.planning.simulation.planner.pdm_planner.scoring.pdm_scorer import PDMScorer
+from nuplan.planning.simulation.trajectory.trajectory_sampling import TrajectorySampling
 from nuplan.planning.simulation.trajectory.interpolated_trajectory import InterpolatedTrajectory
+
+from nuplan_garage.planning.simulation.planner.pdm_planner.scoring.pdm_scorer import PDMScorer
 
 
 class PDMEmergencyBrake:
@@ -15,8 +17,7 @@ class PDMEmergencyBrake:
 
     def __init__(
         self,
-        trajectory_samples: int,
-        sample_interval: float,
+        trajectory_sampling: TrajectorySampling,
         time_to_infraction_threshold: float = 2.0,
         max_ego_speed: float = 5.0,
         max_long_accel: float = 2.40,
@@ -25,8 +26,7 @@ class PDMEmergencyBrake:
     ):
         """
         Constructor for PDMEmergencyBrake
-        :param trajectory_samples: number of trajectory samples
-        :param sample_interval: interval of trajectory samples [s]
+        :param trajectory_sampling: Sampling parameters for final trajectory
         :param time_to_infraction_threshold: threshold for applying brake, defaults to 2.0
         :param max_ego_speed: maximum speed to apply brake, defaults to 5.0
         :param max_long_accel: maximum longitudinal acceleration for braking, defaults to 2.40
@@ -35,8 +35,7 @@ class PDMEmergencyBrake:
         """
 
         # trajectory parameters
-        self._trajectory_samples = trajectory_samples
-        self._sample_interval = sample_interval
+        self._trajectory_sampling = trajectory_sampling
 
         # braking parameters
         self._max_ego_speed: float = max_ego_speed  # [m/s]
@@ -121,8 +120,8 @@ class PDMEmergencyBrake:
         trajectory_states = []
 
         # Propagate planned trajectory for set number of samples
-        for sample in range(self._trajectory_samples + 1):
-            time_t = self._sample_interval * sample
+        for sample in range(self._trajectory_sampling.num_poses + 1):
+            time_t = self._trajectory_sampling.interval_length * sample
             pose = relative_to_absolute_poses(
                 ego_state.center, [StateSE2(correcting_velocity * time_t, 0, 0)]
             )[0]
@@ -137,6 +136,6 @@ class PDMEmergencyBrake:
             )
             trajectory_states.append(ego_state_)
 
-            current_time_point += TimePoint(int(self._sample_interval * 1e6))
+            current_time_point += TimePoint(int(self._trajectory_sampling.interval_length * 1e6))
 
         return InterpolatedTrajectory(trajectory_states)
