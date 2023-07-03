@@ -176,7 +176,7 @@ class PDMFeatureBuilder(AbstractFeatureBuilder):
         # extract planner trajectory
         future_step_time: TimeDuration = TimeDuration.from_s(self._trajectory_sampling.step_time)
         future_time_points: List[TimePoint] = [
-            current_time + future_step_time * (i + 1)
+            trajectory.start_time + future_step_time * (i + 1)
             for i in range(self._trajectory_sampling.num_poses)
         ]
         trajectory_ego_states = trajectory.get_state_at_times(future_time_points) # sample to model trajectory 
@@ -188,14 +188,14 @@ class PDMFeatureBuilder(AbstractFeatureBuilder):
         )  # convert to relative coords
 
         # extract planner centerline
-        centerline: PDMPath = self._planner.centerline
+        centerline: PDMPath = self._planner._centerline
         current_progress: float = centerline.project(Point(*current_pose.array))
         centerline_progress_values = (
             np.arange(self._centerline_samples, dtype=np.float64) * self._centerline_interval
             + current_progress
         )  # distance values to interpolate
         planner_centerline = convert_absolute_to_relative_se2_array(
-            centerline.interpolate(centerline_progress_values, as_array=True)
+            current_pose, centerline.interpolate(centerline_progress_values, as_array=True)
         )  # convert to relative coords
 
         return PDMFeature(

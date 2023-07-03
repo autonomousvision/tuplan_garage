@@ -67,7 +67,7 @@ Planning results on the proposed *Val14* benchmark. Please refer to the [paper](
 
 ## To Do
 - [ ] Additional baselines
-- [ ] ML planners code & checkpoints
+- [x] ML planners code & checkpoints
 - [x] Supplementary material, video, slides
 - [x] Val14 benchmark 
 - [x] Installation tutorial
@@ -92,22 +92,30 @@ conda activate nuplan
 ```
 pip install -e .
 ```
+- add the following environment variable to your `~/.bashrc`
+```
+NUPLAN_DEVKIT_ROOT="$HOME/nuplan-devkit/"
+```
 
 ### 2. Training
-Coming soon!
+When running a training, you have to add the `hydra.searchpath` for the `nuplan_garage` correctly.
+Note: since hydra does not yet support appending to lists ([see here](https://github.com/facebookresearch/hydra/issues/1547)), you have to add the original searchpaths in the override.
+Training scripts can be run with the scripts found in `/scripts/training/`.
+Before training from an already existing cache, please check [this](https://github.com/motional/nuplan-devkit/issues/128) issue.
+You can find our trained models [here](https://drive.google.com/drive/folders/1LLdunqyvQQuBuknzmf7KMIJiA2grLYB2?usp=sharing).
 
 ### 3. Evaluation
-When running an evaluation, you have to add the `hydra.searchpath` for the `nuplan_garage` correctly.
-Note: since hydra does not yet support appending to lists ([see here](https://github.com/facebookresearch/hydra/issues/1547)), you have to add the original searchpaths in the override.
+Same as for the training, when running an evaluation, you have to add the `hydra.searchpath` for the `nuplan_garage` correctly.
 The example below runs an evaluation of the `pdm_closed_planner` on the `val14_split`, both of which are part of the nuplan_garage
 ```
-python /path/to/nuplan/nuplan-devkit/nuplan/planning/script/run_simulation.py \
+python $NUPLAN_DEVKIT_ROOT/nuplan/planning/script/run_simulation.py \
 +simulation=closed_loop_nonreactive_agents \
 planner=pdm_closed_planner \
 scenario_filter=val14_split \
 scenario_builder=nuplan \
 hydra.searchpath="[pkg://nuplan_garage.planning.script.config.common, pkg://nuplan_garage.planning.script.config.simulation, pkg://nuplan.planning.script.config.common, pkg://nuplan.planning.script.experiments]"
 ```
+You can find exemplary shells scripts in `/scripts/simulation/`
 
 ## Contact
 If you have any questions or suggestions, please feel free to open an issue or contact us (kashyap.chitta@uni-tuebingen.de).
