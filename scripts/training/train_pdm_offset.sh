@@ -6,11 +6,12 @@ BATCH_SIZE=64
 SEED=0
 
 JOB_NAME=training_pdm_offset_model
-CACHE_PATH=/home/daniel/nuplan/cache/pdm_feature_cache
+CACHE_PATH=/path/to/cache/
 USE_CACHE_WITHOUT_DATASET=False
 
 python $NUPLAN_DEVKIT_ROOT/nuplan/planning/script/run_training.py \
 seed=$SEED \
+py_func=train \
 +training=training_pdm_offset_model \
 job_name=$JOB_NAME \
 scenario_builder=nuplan \
