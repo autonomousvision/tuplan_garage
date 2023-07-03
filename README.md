@@ -67,7 +67,7 @@ Planning results on the proposed *Val14* benchmark. Please refer to the [paper](
 
 ## To Do
 - [ ] Additional baselines
-- [ ] ML planners code & checkpoints
+- [x] ML planners code & checkpoints
 - [x] Supplementary material, video, slides
 - [x] Val14 benchmark 
 - [x] Installation tutorial
@@ -100,15 +100,9 @@ NUPLAN_DEVKIT_ROOT="$HOME/nuplan-devkit/"
 ### 2. Training
 When running a training, you have to add the `hydra.searchpath` for the `nuplan_garage` correctly.
 Note: since hydra does not yet support appending to lists ([see here](https://github.com/facebookresearch/hydra/issues/1547)), you have to add the original searchpaths in the override.
-The following example runs a training for the `pdm_open` model
-```
-python $NUPLAN_DEVKIT_ROOT/nuplan/planning/script/run_training.py \
-+training=training_pdm_open_model \
-job_name="training_pdm_open_model" \
-hydra.searchpath="[pkg://nuplan_garage.planning.script.config.common, pkg://nuplan_garage.planning.script.experiments, pkg://nuplan.planning.script.config.common, pkg://nuplan.planning.script.experiments]"
-```
 Training scripts can be run with the scripts found in `/scripts/training/`.
 Before training from an already existing cache, please check [this](https://github.com/motional/nuplan-devkit/issues/128) issue.
+You can find our trained models [here](https://drive.google.com/drive/folders/1LLdunqyvQQuBuknzmf7KMIJiA2grLYB2?usp=sharing).
 
 ### 3. Evaluation
 Same as for the training, when running an evaluation, you have to add the `hydra.searchpath` for the `nuplan_garage` correctly.
