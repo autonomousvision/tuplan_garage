@@ -1,4 +1,19 @@
-pdm_closed_planner:
+_target_: nuplan_garage.planning.training.modeling.models.pdm_open_model.PDMOpenModel
+_convert_: 'all'
+
+trajectory_sampling:
+  _target_: nuplan.planning.simulation.trajectory.trajectory_sampling.TrajectorySampling
+  _convert_: 'all'
+  num_poses: 16 # target future poses
+  interval_length: 0.5 # interval of samples [s]
+
+history_sampling:
+  _target_: nuplan.planning.simulation.trajectory.trajectory_sampling.TrajectorySampling
+  _convert_: 'all'
+  num_poses: 10 # target future poses
+  interval_length: 0.2  # interval of samples [s]
+
+planner:
   _target_: nuplan_garage.planning.simulation.planner.pdm_planner.pdm_closed_planner.PDMClosedPlanner
   _convert_: 'all'
   
@@ -29,3 +44,6 @@ pdm_closed_planner:
   lateral_offsets: [-1.0, 1.0] # Signed offsets from centerline (or null) [m]
   map_radius: 50 # Radius to consider around ego [m]
 
+centerline_samples: 120 # number of samples poses on centerline 
+centerline_interval: 1.0  #  interval of sampled poses on centerline [m]
+hidden_dim: 512

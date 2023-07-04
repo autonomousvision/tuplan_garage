@@ -3,6 +3,8 @@ import numpy as np
 import numpy.typing as npt
 from nuplan.common.actor_state.state_representation import StateSE2
 
+from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_enums import SE2Index
+
 
 def normalize_angle(angle):
     """
@@ -66,3 +68,26 @@ def calculate_progress(path: List[StateSE2]) -> List[float]:
     )
     progress_diff = np.append(0.0, np.linalg.norm(points_diff, axis=0))
     return np.cumsum(progress_diff, dtype=np.float64)  # type: ignore
+
+
+def convert_absolute_to_relative_se2_array(
+    origin: StateSE2, state_se2_array: npt.NDArray[np.float64]
+) -> npt.NDArray[np.float64]:
+    """
+    Converts an StateSE2 array from global to relative coordinates.
+    :param origin: origin pose of relative coords system
+    :param state_se2_array: array of SE2 states with (x,y,θ) in last dim
+    :return: SE2 coords array in relative coordinates
+    """
+    assert len(SE2Index) == state_se2_array.shape[-1]
+
+    theta = -origin.heading
+    origin_array = np.array([[origin.x, origin.y, origin.heading]], dtype=np.float64)
+
+    R = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
+
+    points_rel = state_se2_array - origin_array
+    points_rel[..., :2] = points_rel[..., :2] @ R.T
+    points_rel[:, 2] = normalize_angle(points_rel[:, 2])
+
+    return points_rel

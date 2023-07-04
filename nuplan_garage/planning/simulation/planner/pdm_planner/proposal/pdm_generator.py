@@ -1,5 +1,5 @@
 import copy
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
 import numpy as np
 import numpy.typing as npt
@@ -13,18 +13,26 @@ from nuplan.common.actor_state.scene_object import SceneObject
 from nuplan.common.actor_state.state_representation import StateSE2, TimePoint
 from nuplan.common.actor_state.vehicle_parameters import VehicleParameters
 from nuplan.common.geometry.transform import transform
-from nuplan_garage.planning.simulation.planner.pdm_planner.observation.pdm_observation import (
-    PDMObservation,
+from nuplan.planning.simulation.trajectory.interpolated_trajectory import InterpolatedTrajectory
+
+from nuplan_garage.planning.simulation.planner.pdm_planner.proposal.pdm_proposal import (
+    PDMProposalManager,
 )
-from nuplan_garage.planning.simulation.planner.pdm_planner.proposal.pdm_proposal import PDMProposalManager
-from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_array_representation import state_array_to_ego_states
-from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_geometry_utils import normalize_angle
+from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_array_representation import (
+    state_array_to_ego_states,
+)
+from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_geometry_utils import (
+    normalize_angle,
+)
 from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_enums import (
     LeadingAgentIndex,
     StateIDMIndex,
     StateIndex,
 )
-from nuplan.planning.simulation.trajectory.interpolated_trajectory import InterpolatedTrajectory
+from nuplan_garage.planning.simulation.planner.pdm_planner.observation.pdm_observation import (
+    PDMObservation,
+)
+from nuplan.planning.simulation.trajectory.trajectory_sampling import TrajectorySampling
 
 
 class PDMGenerator:
@@ -32,23 +40,24 @@ class PDMGenerator:
 
     def __init__(
         self,
-        trajectory_samples: int,
-        proposal_samples: int,
-        sample_interval: float,
+        trajectory_sampling: TrajectorySampling,
+        proposal_sampling: TrajectorySampling,
         leading_agent_update_rate: int = 2,
     ):
         """
         Constructor of PDMGenerator
-        :param trajectory_samples: number of trajectory samples
-        :param proposal_samples: number of proposal samples
-        :param sample_interval: interval of trajectory/proposal samples [s]
+        :param trajectory_sampling: Sampling parameters for final trajectory
+        :param proposal_sampling: Sampling parameters for proposals
         :param leading_agent_update_rate: sample update-rate of leading agent state, defaults to 2
         """
+        assert (
+            trajectory_sampling.interval_length == proposal_sampling.interval_length
+        ), "PDMGenerator: Proposals and Trajectory must have equal interval length!"
 
         # trajectory config
-        self._trajectory_samples: int = trajectory_samples
-        self._proposal_samples: int = proposal_samples
-        self._sample_interval: float = sample_interval
+        self._trajectory_sampling: int = trajectory_sampling
+        self._proposal_sampling: int = proposal_sampling
+        self._sample_interval: float = trajectory_sampling.interval_length
 
         # generation config
         self._leading_agent_update: int = leading_agent_update_rate
@@ -90,7 +99,7 @@ class PDMGenerator:
 
         for lateral_idx, lateral_batch_idcs in lateral_batch_dict.items():
             self._initialize_states(lateral_batch_idcs)
-            for time_idx in range(1, self._proposal_samples + 1, 1):
+            for time_idx in range(1, self._proposal_sampling.num_poses + 1, 1):
                 self._update_leading_agents(lateral_batch_idcs, time_idx)
                 self._update_idm_states(lateral_batch_idcs, time_idx)
                 self._update_states_se2(lateral_batch_idcs, time_idx)
@@ -107,13 +116,15 @@ class PDMGenerator:
         :return: InterpolatedTrajectory class
         """
         assert (
-            len(self._time_point_list) == self._proposal_samples + 1
+            len(self._time_point_list) == self._proposal_sampling.num_poses + 1
         ), "PDMGenerator: Proposals must be generated first!"
 
         lateral_batch_idcs = [proposal_idx]
         current_time_point = copy.deepcopy(self._time_point_list[-1])
 
-        for time_idx in range(self._proposal_samples + 1, self._trajectory_samples + 1, 1):
+        for time_idx in range(
+            self._proposal_sampling.num_poses + 1, self._trajectory_sampling.num_poses + 1, 1
+        ):
             current_time_point += TimePoint(int(self._sample_interval * 1e6))
             self._time_point_list.append(current_time_point)
 
@@ -149,14 +160,20 @@ class PDMGenerator:
 
         # reset proposal state arrays
         self._state_array: npt.NDArray[np.float64] = np.zeros(
-            (len(self._proposal_manager), self._trajectory_samples + 1, StateIndex.size()),
+            (
+                len(self._proposal_manager),
+                self._trajectory_sampling.num_poses + 1,
+                StateIndex.size(),
+            ),
             dtype=np.float64,
         )  # x, y, heading
         self._state_idm_array: npt.NDArray[np.float64] = np.zeros(
-            (len(self._proposal_manager), self._trajectory_samples + 1, 2), dtype=np.float64
+            (len(self._proposal_manager), self._trajectory_sampling.num_poses + 1, 2),
+            dtype=np.float64,
         )  # progress, velocity
         self._leading_agent_array: npt.NDArray[np.float64] = np.zeros(
-            (len(self._proposal_manager), self._trajectory_samples + 1, 3), dtype=np.float64
+            (len(self._proposal_manager), self._trajectory_sampling.num_poses + 1, 3),
+            dtype=np.float64,
         )  # progress, velocity, rear-length
 
         # reset caches
@@ -169,7 +186,7 @@ class PDMGenerator:
         """Initializes a list of TimePoint objects for proposal horizon."""
         current_time_point = copy.deepcopy(self._initial_ego_state.time_point)
         self._time_point_list = [current_time_point]
-        for time_idx in range(1, self._proposal_samples + 1, 1):
+        for time_idx in range(1, self._proposal_sampling.num_poses + 1, 1):
             current_time_point += TimePoint(int(self._sample_interval * 1e6))
             self._time_point_list.append(copy.deepcopy(current_time_point))
 
@@ -360,7 +377,7 @@ class PDMGenerator:
             trajectory_distance = (
                 ego_distance
                 + abs(self._proposal_manager.max_target_velocity)
-                * self._trajectory_samples
+                * self._trajectory_sampling.num_poses
                 * self._sample_interval
             )
             linestring_ahead = self._proposal_manager[proposal_idx].path.substring(

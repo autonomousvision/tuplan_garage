@@ -6,21 +6,28 @@ import numpy as np
 
 from nuplan.planning.simulation.observation.observation_type import Observation
 from nuplan.planning.simulation.planner.abstract_planner import PlannerInitialization, PlannerInput
-from nuplan_garage.planning.simulation.planner.pdm_planner.abstract_pdm_planner import AbstractPDMPlanner
-from nuplan_garage.planning.simulation.planner.pdm_planner.proposal.batch_idm_policy import BatchIDMPolicy
-from nuplan_garage.planning.simulation.planner.pdm_planner.utils.route_utils import (
-    route_roadblock_correction,
-)
 from nuplan.planning.simulation.trajectory.abstract_trajectory import AbstractTrajectory
+from nuplan.planning.simulation.trajectory.trajectory_sampling import TrajectorySampling
+
+from nuplan_garage.planning.simulation.planner.pdm_planner.abstract_pdm_closed_planner import (
+    AbstractPDMClosedPlanner,
+)
+from nuplan_garage.planning.simulation.planner.pdm_planner.observation.pdm_observation_utils import (
+    get_drivable_area_map,
+)
+from nuplan_garage.planning.simulation.planner.pdm_planner.proposal.batch_idm_policy import (
+    BatchIDMPolicy,
+)
 
 
 import warnings
-warnings.filterwarnings("ignore", category=RuntimeWarning) 
+
+warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 logger = logging.getLogger(__name__)
 
 
-class PDMClosedPlanner(AbstractPDMPlanner):
+class PDMClosedPlanner(AbstractPDMClosedPlanner):
     """PDM-Closed planner class."""
 
     # Inherited property, see superclass.
@@ -28,28 +35,25 @@ class PDMClosedPlanner(AbstractPDMPlanner):
 
     def __init__(
         self,
+        trajectory_sampling: TrajectorySampling,
+        proposal_sampling: TrajectorySampling,
         idm_policies: BatchIDMPolicy,
         lateral_offsets: Optional[List[float]],
-        trajectory_samples: int,
-        proposal_samples: int,
-        sample_interval: float,
         map_radius: float,
     ):
         """
         Constructor for PDMClosedPlanner
+        :param trajectory_sampling: Sampling parameters for final trajectory
+        :param proposal_sampling: Sampling parameters for proposals
         :param idm_policies: BatchIDMPolicy class
         :param lateral_offsets: centerline offsets for proposals (optional)
-        :param trajectory_samples: number of trajectory samples
-        :param proposal_samples: number of proposal samples
-        :param sample_interval: interval of trajectory/proposal samples
         :param map_radius: radius around ego to consider
         """
         super(PDMClosedPlanner, self).__init__(
+            trajectory_sampling,
+            proposal_sampling,
             idm_policies,
             lateral_offsets,
-            trajectory_samples,
-            proposal_samples,
-            sample_interval,
             map_radius,
         )
 
@@ -72,53 +76,16 @@ class PDMClosedPlanner(AbstractPDMPlanner):
         """Inherited, see superclass."""
 
         gc.disable()
-        ego_state, observation = current_input.history.current_state
+        ego_state, _ = current_input.history.current_state
 
         # Apply route correction on first iteration (ego_state required)
         if self._iteration == 0:
-            route_roadblock_ids = route_roadblock_correction(
-                ego_state, self._map_api, self._route_roadblock_dict
-            )
-            self._load_route_dicts(route_roadblock_ids)
+            self._route_roadblock_correction(ego_state)
 
-        # 1. Environment forecast and observation update
-        self._observation.update(
-            ego_state,
-            observation,
-            current_input.traffic_light_data,
-            self._route_lane_dict,
-            self._map_api,
-        )
+        # Update/Create drivable area polygon map
+        self._drivable_area_map = get_drivable_area_map(self._map_api, ego_state, self._map_radius)
 
-        # 2. Centerline extraction and proposal update
-        self._update_proposal_manager(ego_state)
-
-        # 3. Generate/Unroll proposals
-        proposals_array = self._generator.generate_proposals(
-            ego_state, self._observation, self._proposal_manager
-        )
-
-        # 4. Simulate proposals
-        simulated_proposals_array = self._simulator.simulate_proposals(proposals_array, ego_state)
-
-        # 5. Score proposals
-        proposal_scores = self._scorer.score_proposals(
-            simulated_proposals_array,
-            ego_state,
-            self._observation,
-            self._centerline,
-            self._route_lane_dict,
-            self._map_api,
-        )
-
-        # 6.a Apply brake if emergency is expected
-        trajectory = self._emergency_brake.brake_if_emergency(
-            ego_state, proposal_scores, self._scorer
-        )
-
-        # 6.b Otherwise, extend and output best proposal
-        if trajectory is None:
-            trajectory = self._generator.generate_trajectory(np.argmax(proposal_scores))
+        trajectory = self._get_closed_loop_trajectory(current_input)
 
         self._iteration += 1
         return trajectory

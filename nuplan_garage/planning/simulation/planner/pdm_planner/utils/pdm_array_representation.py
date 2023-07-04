@@ -86,6 +86,18 @@ def ego_state_to_state_array(ego_state: EgoState) -> npt.NDArray[np.float64]:
 
     return state_array
 
+def ego_states_to_state_array(ego_states: List[EgoState]) -> npt.NDArray[np.float64]:
+    """
+    Converts a list of ego states into an array representation (drops time-stamps and vehicle parameters)
+    :param ego_state: ego state class
+    :return: array containing ego state values
+    """
+    state_array = np.array(
+        [ego_state_to_state_array(ego_state) for ego_state in ego_states],
+        dtype=np.float64,
+    )
+    return state_array
+
 
 def state_array_to_ego_state(
     state_array: npt.NDArray[np.float64],

@@ -27,6 +27,8 @@ class PDMPath:
         Constructor for PDMPath
         :param discrete_path: list of (x,y,θ) values
         """
+
+        self._discrete_path = discrete_path
         self._states_se2_array = states_se2_to_array(discrete_path)
         self._states_se2_array[:, SE2Index.HEADING] = np.unwrap(
             self._states_se2_array[:, SE2Index.HEADING], axis=0
@@ -35,6 +37,11 @@ class PDMPath:
 
         self._linestring = linestrings(self._states_se2_array[:, : SE2Index.HEADING])
         self._interpolator = interp1d(self._progress, self._states_se2_array, axis=0)
+
+    @property
+    def discrete_path(self):
+        """Getter for discrete StateSE2 objects of path."""
+        return self._discrete_path
 
     @property
     def length(self):
