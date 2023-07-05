@@ -13,7 +13,8 @@
 https://github.com/autonomousvision/nuplan_garage/assets/22528226/f91e9ce2-ae3d-4f1e-933e-d48ee5762497
 
 ## News
-* **`26 Jun, 2023`:** We released our [supplementary material](https://danieldauner.github.io/assets/pdf/suppmat/suppmat_dauner2023parting.pdf) and the code for PDM-Closed. Code and models for the ML planners are coming soon, please stay tuned!
+* **`04 Jul, 2023`:**  We released the code and models for our ML planners. Additional baselines and a contribution guide are coming soon, please stay tuned!
+* **`26 Jun, 2023`:** We released our [supplementary material](https://danieldauner.github.io/assets/pdf/suppmat/suppmat_dauner2023parting.pdf) and the code for PDM-Closed. 
 * **`14 Jun, 2023`:** We released our paper on [arXiv](https://arxiv.org/abs/2306.07962). 
 * **`2 Jun, 2023`:** Our approach won the [2023 nuPlan Challenge](https://opendrivelab.com/AD23Challenge.html#nuplan_planning)!
 
@@ -54,19 +55,21 @@ Planning results on the proposed *Val14* benchmark. Please refer to the [paper](
 
 | **Method**        | **Representation**     | **CLS-R ↑** | **CLS-NR ↑** | **OLS ↑**  | **Time (ms) ↓** |
 |-------------------|--------------|------------|--------------|------------|------------|
-| [Urban Driver](https://arxiv.org/abs/2109.13333)  | Polygon      | 44         | 45           | 76         | 64         |
+| [Urban Driver](https://arxiv.org/abs/2109.13333)*  | Polygon      | 44         | 45           | 76         | 64         |
 | [GC-PGP](https://arxiv.org/abs/2302.07753v1)        | Graph        | 54         | 57           | 82         | 100        |
 | [PlanCNN](https://arxiv.org/abs/2210.14222)       | Raster       | 72         | 73           | 64         | 43         |
 | [IDM](https://arxiv.org/abs/cond-mat/0002177)           | Centerline   | 77         | 76           | 38         | 27         |
 | PDM-Open          | Centerline   | 54         | 50           | **86**     | **7**      |
 | PDM-Closed        | Centerline   | **92**     | **93**       | 44         | 91         |
 | PDM-Hybrid        | Centerline   | **92**     | **93**       | 84         | 96         |
-| PDM-Hybrid*       | Graph        | **92**     | **93**       | 84         | 172        |
 | *Log Replay*      | *GT*         | *80*       | *94*         | *100*      | -          |
 
+*Open-loop reimplementation of Urban Driver
 
 ## To Do
 - [ ] Additional baselines
+- [ ] Visualization scripts
+- [ ] Contribution guide
 - [x] ML planners code & checkpoints
 - [x] Supplementary material, video, slides
 - [x] Val14 benchmark 
