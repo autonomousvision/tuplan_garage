@@ -2,14 +2,21 @@ from typing import Optional
 
 import numpy as np
 import numpy.typing as npt
-
 from nuplan.common.actor_state.ego_state import EgoState
-from nuplan.common.actor_state.state_representation import StateSE2, StateVector2D, TimePoint
+from nuplan.common.actor_state.state_representation import (
+    StateSE2,
+    StateVector2D,
+    TimePoint,
+)
 from nuplan.common.geometry.convert import relative_to_absolute_poses
+from nuplan.planning.simulation.trajectory.interpolated_trajectory import (
+    InterpolatedTrajectory,
+)
 from nuplan.planning.simulation.trajectory.trajectory_sampling import TrajectorySampling
-from nuplan.planning.simulation.trajectory.interpolated_trajectory import InterpolatedTrajectory
 
-from nuplan_garage.planning.simulation.planner.pdm_planner.scoring.pdm_scorer import PDMScorer
+from nuplan_garage.planning.simulation.planner.pdm_planner.scoring.pdm_scorer import (
+    PDMScorer,
+)
 
 
 class PDMEmergencyBrake:
@@ -88,7 +95,7 @@ class PDMEmergencyBrake:
         Generates trajectory for reach zero velocity.
         :param ego_state: state object of ego
         :return: InterpolatedTrajectory for braking
-        """        
+        """
         current_time_point = ego_state.time_point
         current_velocity = ego_state.dynamic_car_state.center_velocity_2d.x
         current_acceleration = ego_state.dynamic_car_state.center_acceleration_2d.x
@@ -115,7 +122,9 @@ class PDMEmergencyBrake:
 
             u_t = k_p * error + k_d * dt_error
 
-            correcting_velocity = max(min(u_t, self._max_long_accel), self._min_long_accel)
+            correcting_velocity = max(
+                min(u_t, self._max_long_accel), self._min_long_accel
+            )
 
         trajectory_states = []
 
@@ -136,6 +145,8 @@ class PDMEmergencyBrake:
             )
             trajectory_states.append(ego_state_)
 
-            current_time_point += TimePoint(int(self._trajectory_sampling.interval_length * 1e6))
+            current_time_point += TimePoint(
+                int(self._trajectory_sampling.interval_length * 1e6)
+            )
 
         return InterpolatedTrajectory(trajectory_states)

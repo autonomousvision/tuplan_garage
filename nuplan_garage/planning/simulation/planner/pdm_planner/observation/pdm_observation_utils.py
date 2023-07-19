@@ -1,9 +1,10 @@
 from typing import List
-from shapely.geometry import Polygon
+
 from nuplan.common.actor_state.ego_state import EgoState
 from nuplan.common.actor_state.state_representation import Point2D
 from nuplan.common.maps.abstract_map import AbstractMap
 from nuplan.common.maps.maps_datatypes import SemanticMapLayer
+from shapely.geometry import Polygon
 
 from nuplan_garage.planning.simulation.planner.pdm_planner.observation.pdm_occupancy_map import (
     PDMOccupancyMap,
@@ -15,15 +16,18 @@ DRIVABLE_MAP_LAYERS = [
     SemanticMapLayer.CARPARK_AREA,
 ]
 
+
 def get_drivable_area_map(
     map_api: AbstractMap,
     ego_state: EgoState,
     map_radius: float = 50,
 ) -> PDMOccupancyMap:
-    
+
     # query all drivable map elements around ego position
     position: Point2D = ego_state.center.point
-    drivable_area = map_api.get_proximal_map_objects(position, map_radius, DRIVABLE_MAP_LAYERS)
+    drivable_area = map_api.get_proximal_map_objects(
+        position, map_radius, DRIVABLE_MAP_LAYERS
+    )
 
     # collect lane polygons in list, save on-route indices
     drivable_polygons: List[Polygon] = []

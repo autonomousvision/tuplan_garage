@@ -3,8 +3,6 @@ from typing import Dict, List, Optional
 
 import numpy as np
 import numpy.typing as npt
-from shapely import Point, creation
-
 from nuplan.common.actor_state.ego_state import EgoState
 from nuplan.common.actor_state.state_representation import StateSE2
 from nuplan.common.actor_state.tracked_objects_types import AGENT_TYPES
@@ -12,8 +10,12 @@ from nuplan.common.maps.abstract_map import AbstractMap
 from nuplan.common.maps.abstract_map_objects import LaneGraphEdgeMapObject
 from nuplan.common.maps.maps_datatypes import SemanticMapLayer
 from nuplan.planning.metrics.utils.collision_utils import CollisionType
-from nuplan.planning.simulation.observation.idm.utils import is_agent_ahead, is_agent_behind
+from nuplan.planning.simulation.observation.idm.utils import (
+    is_agent_ahead,
+    is_agent_behind,
+)
 from nuplan.planning.simulation.trajectory.trajectory_sampling import TrajectorySampling
+from shapely import Point, creation
 
 from nuplan_garage.planning.simulation.planner.pdm_planner.observation.pdm_observation import (
     PDMObservation,
@@ -21,16 +23,15 @@ from nuplan_garage.planning.simulation.planner.pdm_planner.observation.pdm_obser
 from nuplan_garage.planning.simulation.planner.pdm_planner.observation.pdm_occupancy_map import (
     PDMOccupancyMap,
 )
-from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_array_representation import (
-    coords_array_to_polygon_array,
-    state_array_to_coords_array,
-)
-from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_path import PDMPath
 from nuplan_garage.planning.simulation.planner.pdm_planner.scoring.pdm_comfort_metrics import (
     ego_is_comfortable,
 )
 from nuplan_garage.planning.simulation.planner.pdm_planner.scoring.pdm_scorer_utils import (
     get_collision_type,
+)
+from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_array_representation import (
+    coords_array_to_polygon_array,
+    state_array_to_coords_array,
 )
 from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_enums import (
     BBCoordsIndex,
@@ -39,6 +40,7 @@ from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_enums impor
     StateIndex,
     WeightedMetricIndex,
 )
+from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_path import PDMPath
 
 # constants
 # TODO: Add to config
@@ -92,7 +94,10 @@ class PDMScorer:
         :param proposal_idx: index for proposal
         :return: time to infraction
         """
-        return self._collision_time_idcs[proposal_idx] * self._proposal_sampling.interval_length
+        return (
+            self._collision_time_idcs[proposal_idx]
+            * self._proposal_sampling.interval_length
+        )
 
     def time_to_ttc_infraction(self, proposal_idx: int) -> float:
         """
@@ -100,7 +105,9 @@ class PDMScorer:
         :param proposal_idx: index for proposal
         :return: time to infraction
         """
-        return self._ttc_time_idcs[proposal_idx] * self._proposal_sampling.interval_length
+        return (
+            self._ttc_time_idcs[proposal_idx] * self._proposal_sampling.interval_length
+        )
 
     def score_proposals(
         self,
@@ -122,7 +129,7 @@ class PDMScorer:
         :param drivable_area_map: Occupancy map of drivable are polygons
         :param map_api: map object
         :return: array containing score of each proposal
-        """        
+        """
 
         # initialize & lazy load class values
         self._reset(
@@ -170,9 +177,9 @@ class PDMScorer:
         self._weighted_metrics[WeightedMetricIndex.PROGRESS] = normalized_progress
 
         # accumulate weighted metrics
-        weighted_metric_scores = (self._weighted_metrics * WEIGHTED_METRICS_WEIGHTS[..., None]).sum(
-            axis=0
-        )
+        weighted_metric_scores = (
+            self._weighted_metrics * WEIGHTED_METRICS_WEIGHTS[..., None]
+        ).sum(axis=0)
         weighted_metric_scores /= WEIGHTED_METRICS_WEIGHTS.sum()
 
         # calculate final scores
@@ -226,7 +233,11 @@ class PDMScorer:
 
         # zero initialize all remaining arrays.
         self._ego_areas = np.zeros(
-            (self._num_proposals, self._proposal_sampling.num_poses + 1, len(EgoAreaIndex)),
+            (
+                self._num_proposals,
+                self._proposal_sampling.num_poses + 1,
+                len(EgoAreaIndex),
+            ),
             dtype=np.bool_,
         )
         self._multi_metrics = np.zeros(
@@ -272,25 +283,37 @@ class PDMScorer:
         # - more than one drivable polygon contains at least one corner
         # - no polygon contains all corners
         batch_multiple_lanes_mask = np.zeros((n_proposals, n_horizon), dtype=np.bool_)
-        batch_multiple_lanes_mask = (corners_in_polygon.sum(axis=-1) > 0).sum(axis=-1) > 1
+        batch_multiple_lanes_mask = (corners_in_polygon.sum(axis=-1) > 0).sum(
+            axis=-1
+        ) > 1
 
         batch_not_single_lanes_mask = np.zeros((n_proposals, n_horizon), dtype=np.bool_)
-        batch_not_single_lanes_mask = np.all(corners_in_polygon.sum(axis=-1) != 4, axis=-1)
+        batch_not_single_lanes_mask = np.all(
+            corners_in_polygon.sum(axis=-1) != 4, axis=-1
+        )
 
-        multiple_lanes_mask = np.logical_and(batch_multiple_lanes_mask, batch_not_single_lanes_mask)
+        multiple_lanes_mask = np.logical_and(
+            batch_multiple_lanes_mask, batch_not_single_lanes_mask
+        )
         self._ego_areas[multiple_lanes_mask, EgoAreaIndex.MULTIPLE_LANES] = True
 
         # in_nondrivable_area: if at least one corner is not within any drivable polygon
         batch_nondrivable_area_mask = np.zeros((n_proposals, n_horizon), dtype=np.bool_)
-        batch_nondrivable_area_mask = (corners_in_polygon.sum(axis=-2) > 0).sum(axis=-1) < 4
-        self._ego_areas[batch_nondrivable_area_mask, EgoAreaIndex.NON_DRIVABLE_AREA] = True
+        batch_nondrivable_area_mask = (corners_in_polygon.sum(axis=-2) > 0).sum(
+            axis=-1
+        ) < 4
+        self._ego_areas[
+            batch_nondrivable_area_mask, EgoAreaIndex.NON_DRIVABLE_AREA
+        ] = True
 
         # in_oncoming_traffic: if center not in any drivable polygon that is on-route
         batch_oncoming_traffic_mask = np.zeros((n_proposals, n_horizon), dtype=np.bool_)
         batch_oncoming_traffic_mask = (
             center_in_polygon[..., drivable_area_on_route_idcs].sum(axis=-1) == 0
         )
-        self._ego_areas[batch_oncoming_traffic_mask, EgoAreaIndex.ONCOMING_TRAFFIC] = True
+        self._ego_areas[
+            batch_oncoming_traffic_mask, EgoAreaIndex.ONCOMING_TRAFFIC
+        ] = True
 
     def _calculate_no_at_fault_collision(self) -> None:
         """
@@ -305,7 +328,9 @@ class PDMScorer:
 
         for time_idx in range(self._proposal_sampling.num_poses + 1):
             ego_polygons = self._ego_polygons[:, time_idx]
-            intersecting = self._observation[time_idx].query(ego_polygons, predicate="intersects")
+            intersecting = self._observation[time_idx].query(
+                ego_polygons, predicate="intersects"
+            )
 
             if len(intersecting) == 0:
                 continue
@@ -319,7 +344,9 @@ class PDMScorer:
 
                 ego_in_multiple_lanes_or_nondrivable_area = (
                     self._ego_areas[proposal_idx, time_idx, EgoAreaIndex.MULTIPLE_LANES]
-                    or self._ego_areas[proposal_idx, time_idx, EgoAreaIndex.NON_DRIVABLE_AREA]
+                    or self._ego_areas[
+                        proposal_idx, time_idx, EgoAreaIndex.NON_DRIVABLE_AREA
+                    ]
                 )
 
                 tracked_object = self._observation.unique_objects[token]
@@ -344,7 +371,9 @@ class PDMScorer:
                     ego_in_multiple_lanes_or_nondrivable_area and collision_at_lateral
                 ):
                     no_at_fault_collision_score = (
-                        0.0 if tracked_object.tracked_object_type in AGENT_TYPES else 0.5
+                        0.0
+                        if tracked_object.tracked_object_type in AGENT_TYPES
+                        else 0.5
                     )
                     no_collision_scores[proposal_idx] = np.minimum(
                         no_collision_scores[proposal_idx], no_at_fault_collision_score
@@ -378,7 +407,9 @@ class PDMScorer:
         coords_exterior[:, :, BBCoordsIndex.CENTER, :] = coords_exterior[
             :, :, BBCoordsIndex.FRONT_LEFT, :
         ]
-        coords_exterior_time_steps = np.repeat(coords_exterior[:, :, None], n_future_steps, axis=2)
+        coords_exterior_time_steps = np.repeat(
+            coords_exterior[:, :, None], n_future_steps, axis=2
+        )
 
         speeds = np.hypot(
             self._states[..., StateIndex.VELOCITY_X],
@@ -423,15 +454,21 @@ class PDMScorer:
                         continue
 
                     ego_in_multiple_lanes_or_nondrivable_area = (
-                        self._ego_areas[proposal_idx, time_idx, EgoAreaIndex.MULTIPLE_LANES]
-                        or self._ego_areas[proposal_idx, time_idx, EgoAreaIndex.NON_DRIVABLE_AREA]
+                        self._ego_areas[
+                            proposal_idx, time_idx, EgoAreaIndex.MULTIPLE_LANES
+                        ]
+                        or self._ego_areas[
+                            proposal_idx, time_idx, EgoAreaIndex.NON_DRIVABLE_AREA
+                        ]
                     )
                     ego_rear_axle: StateSE2 = StateSE2(
                         *self._states[proposal_idx, time_idx, StateIndex.STATE_SE2]
                     )
 
                     centroid = self._observation[current_time_idx][token].centroid
-                    track_heading = self._observation.unique_objects[token].box.center.heading
+                    track_heading = self._observation.unique_objects[
+                        token
+                    ].box.center.heading
                     track_state = StateSE2(centroid.x, centroid.y, track_heading)
                     if is_agent_ahead(ego_rear_axle, track_state) or (
                         (
@@ -442,7 +479,9 @@ class PDMScorer:
                         )
                         and not is_agent_behind(ego_rear_axle, track_state)
                     ):
-                        ttc_scores[proposal_idx] = np.minimum(ttc_scores[proposal_idx], 0.0)
+                        ttc_scores[proposal_idx] = np.minimum(
+                            ttc_scores[proposal_idx], 0.0
+                        )
                         self._ttc_time_idcs[proposal_idx] = min(
                             time_idx, self._ttc_time_idcs[proposal_idx]
                         )
@@ -460,7 +499,9 @@ class PDMScorer:
         # calculate raw progress in meter
         progress_in_meter = np.zeros(self._num_proposals, dtype=np.float64)
         for proposal_idx in range(self._num_proposals):
-            start_point = Point(*self._ego_coords[proposal_idx, 0, BBCoordsIndex.CENTER])
+            start_point = Point(
+                *self._ego_coords[proposal_idx, 0, BBCoordsIndex.CENTER]
+            )
             end_point = Point(*self._ego_coords[proposal_idx, -1, BBCoordsIndex.CENTER])
             progress = self._centerline.project([start_point, end_point])
             progress_in_meter[proposal_idx] = progress[1] - progress[0]
@@ -476,16 +517,22 @@ class PDMScorer:
             * self._proposal_sampling.interval_length
         )
         is_comfortable = ego_is_comfortable(self._states, time_point_s)
-        self._weighted_metrics[WeightedMetricIndex.COMFORTABLE] = np.all(is_comfortable, axis=-1)
+        self._weighted_metrics[WeightedMetricIndex.COMFORTABLE] = np.all(
+            is_comfortable, axis=-1
+        )
 
     def _calculate_drivable_area_compliance(self) -> None:
         """
         Re-implementation of nuPlan's drivable area compliance metric
         """
         drivable_area_compliance_scores = np.ones(self._num_proposals, dtype=np.float64)
-        off_road_mask = self._ego_areas[:, :, EgoAreaIndex.NON_DRIVABLE_AREA].any(axis=-1)
+        off_road_mask = self._ego_areas[:, :, EgoAreaIndex.NON_DRIVABLE_AREA].any(
+            axis=-1
+        )
         drivable_area_compliance_scores[off_road_mask] = 0.0
-        self._multi_metrics[MultiMetricIndex.DRIVABLE_AREA] = drivable_area_compliance_scores
+        self._multi_metrics[
+            MultiMetricIndex.DRIVABLE_AREA
+        ] = drivable_area_compliance_scores
 
     def _calculate_driving_direction_compliance(self) -> None:
         """
@@ -493,17 +540,20 @@ class PDMScorer:
         """
         center_coordinates = self._ego_coords[:, :, BBCoordsIndex.CENTER]
         cum_progress = np.zeros(
-            (self._num_proposals, self._proposal_sampling.num_poses + 1), dtype=np.float64
+            (self._num_proposals, self._proposal_sampling.num_poses + 1),
+            dtype=np.float64,
         )
-        cum_progress[:, 1:] = ((center_coordinates[:, 1:] - center_coordinates[:, :-1]) ** 2.0).sum(
-            axis=-1
-        ) ** 0.5
+        cum_progress[:, 1:] = (
+            (center_coordinates[:, 1:] - center_coordinates[:, :-1]) ** 2.0
+        ).sum(axis=-1) ** 0.5
 
         # mask out progress along the driving direction
         oncoming_traffic_masks = self._ego_areas[:, :, EgoAreaIndex.ONCOMING_TRAFFIC]
         cum_progress[~oncoming_traffic_masks] = 0.0
 
-        driving_direction_compliance_scores = np.ones(self._num_proposals, dtype=np.float64)
+        driving_direction_compliance_scores = np.ones(
+            self._num_proposals, dtype=np.float64
+        )
 
         for proposal_idx in range(self._num_proposals):
             oncoming_traffic_progress, oncoming_traffic_mask = (
@@ -513,13 +563,15 @@ class PDMScorer:
 
             # split progress whenever ego changes traffic direction
             oncoming_progress_splits = np.split(
-                oncoming_traffic_progress, np.where(np.diff(oncoming_traffic_mask))[0] + 1
+                oncoming_traffic_progress,
+                np.where(np.diff(oncoming_traffic_mask))[0] + 1,
             )
 
             # sum up progress of splitted intervals
             # Note: splits along the driving direction will have a sum of zero.
             max_oncoming_traffic_progress = max(
-                oncoming_progress.sum() for oncoming_progress in oncoming_progress_splits
+                oncoming_progress.sum()
+                for oncoming_progress in oncoming_progress_splits
             )
 
             if max_oncoming_traffic_progress < DRIVING_DIRECTION_COMPLIANCE_THRESHOLD:

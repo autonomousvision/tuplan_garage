@@ -1,12 +1,17 @@
 from typing import Dict, List, cast
 
 import torch
-
-from nuplan.planning.training.modeling.objectives.abstract_objective import AbstractObjective
+from nuplan.planning.training.modeling.objectives.abstract_objective import (
+    AbstractObjective,
+)
 from nuplan.planning.training.modeling.objectives.scenario_weight_utils import (
     extract_scenario_type_weight,
 )
-from nuplan.planning.training.modeling.types import FeaturesType, ScenarioListType, TargetsType
+from nuplan.planning.training.modeling.types import (
+    FeaturesType,
+    ScenarioListType,
+    TargetsType,
+)
 from nuplan.planning.training.preprocessing.features.trajectory import Trajectory
 
 
@@ -15,7 +20,9 @@ class L1Objective(AbstractObjective):
     Objective for imitating the expert behavior via an L1-Loss function.
     """
 
-    def __init__(self, scenario_type_loss_weighting: Dict[str, float], weight: float = 1.0):
+    def __init__(
+        self, scenario_type_loss_weighting: Dict[str, float], weight: float = 1.0
+    ):
         """
         Initializes the class
 
@@ -38,7 +45,10 @@ class L1Objective(AbstractObjective):
         return ["trajectory"]
 
     def compute(
-        self, predictions: FeaturesType, targets: TargetsType, scenarios: ScenarioListType
+        self,
+        predictions: FeaturesType,
+        targets: TargetsType,
+        scenarios: ScenarioListType,
     ) -> torch.Tensor:
         """
         Computes the objective's loss given the ground truth targets and the model's predictions
@@ -52,7 +62,9 @@ class L1Objective(AbstractObjective):
         targets_trajectory = cast(Trajectory, targets["trajectory"])
 
         scenario_weights = extract_scenario_type_weight(
-            scenarios, self._scenario_type_loss_weighting, device=predicted_trajectory.data.device
+            scenarios,
+            self._scenario_type_loss_weighting,
+            device=predicted_trajectory.data.device,
         )
 
         batch_size = predicted_trajectory.data.shape[0]
@@ -63,4 +75,4 @@ class L1Objective(AbstractObjective):
             targets_trajectory.data.view(batch_size, -1),
         )
 
-        return self._weight * torch.mean(loss*scenario_weights[...,None])
+        return self._weight * torch.mean(loss * scenario_weights[..., None])

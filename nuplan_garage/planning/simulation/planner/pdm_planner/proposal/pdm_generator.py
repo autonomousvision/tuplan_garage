@@ -3,9 +3,6 @@ from typing import Dict, List, Optional
 
 import numpy as np
 import numpy.typing as npt
-from shapely.geometry import Point, Polygon
-from shapely.geometry.base import CAP_STYLE
-
 from nuplan.common.actor_state.agent import Agent
 from nuplan.common.actor_state.car_footprint import CarFootprint
 from nuplan.common.actor_state.ego_state import EgoState
@@ -13,26 +10,30 @@ from nuplan.common.actor_state.scene_object import SceneObject
 from nuplan.common.actor_state.state_representation import StateSE2, TimePoint
 from nuplan.common.actor_state.vehicle_parameters import VehicleParameters
 from nuplan.common.geometry.transform import transform
-from nuplan.planning.simulation.trajectory.interpolated_trajectory import InterpolatedTrajectory
+from nuplan.planning.simulation.trajectory.interpolated_trajectory import (
+    InterpolatedTrajectory,
+)
+from nuplan.planning.simulation.trajectory.trajectory_sampling import TrajectorySampling
+from shapely.geometry import Point, Polygon
+from shapely.geometry.base import CAP_STYLE
 
+from nuplan_garage.planning.simulation.planner.pdm_planner.observation.pdm_observation import (
+    PDMObservation,
+)
 from nuplan_garage.planning.simulation.planner.pdm_planner.proposal.pdm_proposal import (
     PDMProposalManager,
 )
 from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_array_representation import (
     state_array_to_ego_states,
 )
-from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_geometry_utils import (
-    normalize_angle,
-)
 from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_enums import (
     LeadingAgentIndex,
     StateIDMIndex,
     StateIndex,
 )
-from nuplan_garage.planning.simulation.planner.pdm_planner.observation.pdm_observation import (
-    PDMObservation,
+from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_geometry_utils import (
+    normalize_angle,
 )
-from nuplan.planning.simulation.trajectory.trajectory_sampling import TrajectorySampling
 
 
 class PDMGenerator:
@@ -123,7 +124,9 @@ class PDMGenerator:
         current_time_point = copy.deepcopy(self._time_point_list[-1])
 
         for time_idx in range(
-            self._proposal_sampling.num_poses + 1, self._trajectory_sampling.num_poses + 1, 1
+            self._proposal_sampling.num_poses + 1,
+            self._trajectory_sampling.num_poses + 1,
+            1,
         ):
             current_time_point += TimePoint(int(self._sample_interval * 1e6))
             self._time_point_list.append(current_time_point)
@@ -134,7 +137,9 @@ class PDMGenerator:
 
         # convert array representation to list of EgoState class
         ego_states: List[EgoState] = state_array_to_ego_states(
-            self._state_array[proposal_idx], self._time_point_list, self._vehicle_parameters
+            self._state_array[proposal_idx],
+            self._time_point_list,
+            self._vehicle_parameters,
         )
         return InterpolatedTrajectory(ego_states)
 
@@ -202,11 +207,17 @@ class PDMGenerator:
 
         ego_position = Point(*self._initial_ego_state.rear_axle.point.array)
 
-        ego_progress = self._proposal_manager[dummy_proposal_idx].linestring.project(ego_position)
+        ego_progress = self._proposal_manager[dummy_proposal_idx].linestring.project(
+            ego_position
+        )
         ego_velocity = self._initial_ego_state.dynamic_car_state.rear_axle_velocity_2d.x
 
-        self._state_idm_array[lateral_batch_idcs, 0, StateIDMIndex.PROGRESS] = ego_progress
-        self._state_idm_array[lateral_batch_idcs, 0, StateIDMIndex.VELOCITY] = ego_velocity
+        self._state_idm_array[
+            lateral_batch_idcs, 0, StateIDMIndex.PROGRESS
+        ] = ego_progress
+        self._state_idm_array[
+            lateral_batch_idcs, 0, StateIDMIndex.VELOCITY
+        ] = ego_velocity
 
         state_array = self._proposal_manager[dummy_proposal_idx].path.interpolate(
             [ego_progress], as_array=True
@@ -227,7 +238,9 @@ class PDMGenerator:
         states_se2_array: npt.NDArray[np.float64] = self._proposal_manager[
             dummy_proposal_idx
         ].path.interpolate(current_progress, as_array=True)
-        self._state_array[lateral_batch_idcs, time_idx, StateIndex.STATE_SE2] = states_se2_array
+        self._state_array[
+            lateral_batch_idcs, time_idx, StateIndex.STATE_SE2
+        ] = states_se2_array
 
     def _update_idm_states(self, lateral_batch_idcs: List[int], time_idx: int) -> None:
         """
@@ -248,7 +261,9 @@ class PDMGenerator:
         )
         self._state_idm_array[lateral_batch_idcs, time_idx] = next_idm_states
 
-    def _update_leading_agents(self, lateral_batch_idcs: List[int], time_idx: int) -> None:
+    def _update_leading_agents(
+        self, lateral_batch_idcs: List[int], time_idx: int
+    ) -> None:
         """
         Update leading agent state array by searching for agents/obstacles in driving corridor.
         :param lateral_idx: index indicating the path of proposals
@@ -261,9 +276,9 @@ class PDMGenerator:
         update_leading_agent: bool = (time_idx % self._leading_agent_update) == 0
 
         if not update_leading_agent:
-            self._leading_agent_array[lateral_batch_idcs, time_idx] = self._leading_agent_array[
-                lateral_batch_idcs, time_idx - 1
-            ]
+            self._leading_agent_array[
+                lateral_batch_idcs, time_idx
+            ] = self._leading_agent_array[lateral_batch_idcs, time_idx - 1]
 
         else:
             dummy_proposal_idx = lateral_batch_idcs[0]
@@ -277,9 +292,9 @@ class PDMGenerator:
             object_progress_dict: Dict[str, float] = {}
             for object in intersecting_objects:
                 if object not in self._observation.collided_track_ids:
-                    object_progress = self._proposal_manager[dummy_proposal_idx].linestring.project(
-                        self._observation[time_idx][object].centroid
-                    )
+                    object_progress = self._proposal_manager[
+                        dummy_proposal_idx
+                    ].linestring.project(self._observation[time_idx][object].centroid)
                     object_progress_dict[object] = object_progress
 
             # select leading agent for each proposal individually
@@ -297,7 +312,9 @@ class PDMGenerator:
 
                 if len(agents_ahead) > 0:  # red light, object or agent ahead
                     current_state_se2 = StateSE2(
-                        *self._state_array[proposal_idx, time_idx - 1, StateIndex.STATE_SE2]
+                        *self._state_array[
+                            proposal_idx, time_idx - 1, StateIndex.STATE_SE2
+                        ]
                     )
                     ego_polygon: Polygon = CarFootprint.build_from_rear_axle(
                         current_state_se2, self._vehicle_parameters
@@ -312,7 +329,9 @@ class PDMGenerator:
                     nearest_agent = list(agents_ahead.keys())[argmin]
 
                     # add rel. distance for red light, object or agent
-                    relative_distance = current_ego_progress + relative_distances[argmin]
+                    relative_distance = (
+                        current_ego_progress + relative_distances[argmin]
+                    )
                     leading_agent_array[LeadingAgentIndex.PROGRESS] = relative_distance
 
                     # calculate projected velocity if not red light
@@ -353,7 +372,9 @@ class PDMGenerator:
 
         return projected_velocity
 
-    def _get_intersecting_objects(self, lateral_batch_idcs: List[int], time_idx: int) -> List[str]:
+    def _get_intersecting_objects(
+        self, lateral_batch_idcs: List[int], time_idx: int
+    ) -> List[str]:
         """
         Returns and caches all intersecting objects for the proposals path and time-step.
         :param lateral_batch_idcs: list of proposal indices, sharing a path
@@ -373,7 +394,9 @@ class PDMGenerator:
         lateral_idx = self._proposal_manager[proposal_idx].lateral_idx
 
         if lateral_idx not in self._driving_corridor_cache.keys():
-            ego_distance = self._state_idm_array[proposal_idx, 0, StateIDMIndex.PROGRESS]
+            ego_distance = self._state_idm_array[
+                proposal_idx, 0, StateIDMIndex.PROGRESS
+            ]
             trajectory_distance = (
                 ego_distance
                 + abs(self._proposal_manager.max_target_velocity)

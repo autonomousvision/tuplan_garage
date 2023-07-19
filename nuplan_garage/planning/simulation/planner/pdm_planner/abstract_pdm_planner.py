@@ -3,11 +3,8 @@ from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 import numpy.typing as npt
-from shapely.geometry import Point
-
 from nuplan.common.actor_state.ego_state import EgoState
 from nuplan.common.actor_state.state_representation import StateSE2
-
 from nuplan.common.maps.abstract_map import AbstractMap
 from nuplan.common.maps.abstract_map_objects import (
     LaneGraphEdgeMapObject,
@@ -15,17 +12,15 @@ from nuplan.common.maps.abstract_map_objects import (
 )
 from nuplan.common.maps.maps_datatypes import SemanticMapLayer
 from nuplan.planning.simulation.planner.abstract_planner import AbstractPlanner
+from shapely.geometry import Point
 
-from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_path import (
-    PDMPath,
-)
-
-from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_geometry_utils import (
-    normalize_angle,
-)
 from nuplan_garage.planning.simulation.planner.pdm_planner.utils.graph_search.dijkstra import (
     Dijkstra,
 )
+from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_geometry_utils import (
+    normalize_angle,
+)
+from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_path import PDMPath
 from nuplan_garage.planning.simulation.planner.pdm_planner.utils.route_utils import (
     route_roadblock_correction,
 )
@@ -44,13 +39,15 @@ class AbstractPDMPlanner(AbstractPlanner, ABC):
         Constructor of AbstractPDMPlanner.
         :param map_radius: radius around ego to consider
         """
-        
+
         self._map_radius: int = map_radius  # [m]
         self._iteration: int = 0
 
         # lazy loaded
         self._map_api: Optional[AbstractMap] = None
-        self._route_roadblock_dict: Optional[Dict[str, RoadBlockGraphEdgeMapObject]] = None
+        self._route_roadblock_dict: Optional[
+            Dict[str, RoadBlockGraphEdgeMapObject]
+        ] = None
         self._route_lane_dict: Optional[Dict[str, LaneGraphEdgeMapObject]] = None
 
         self._centerline: Optional[PDMPath] = None
@@ -69,7 +66,9 @@ class AbstractPDMPlanner(AbstractPlanner, ABC):
 
         for id_ in route_roadblock_ids:
             block = self._map_api.get_map_object(id_, SemanticMapLayer.ROADBLOCK)
-            block = block or self._map_api.get_map_object(id_, SemanticMapLayer.ROADBLOCK_CONNECTOR)
+            block = block or self._map_api.get_map_object(
+                id_, SemanticMapLayer.ROADBLOCK_CONNECTOR
+            )
 
             self._route_roadblock_dict[block.id] = block
 
@@ -100,7 +99,9 @@ class AbstractPDMPlanner(AbstractPlanner, ABC):
         roadblock_ids = list(self._route_roadblock_dict.keys())
 
         # find current roadblock index
-        start_idx = np.argmax(np.array(roadblock_ids) == current_lane.get_roadblock_id())
+        start_idx = np.argmax(
+            np.array(roadblock_ids) == current_lane.get_roadblock_id()
+        )
         roadblock_window = roadblocks[start_idx : start_idx + search_depth]
 
         graph_search = Dijkstra(current_lane, list(self._route_lane_dict.keys()))
@@ -165,16 +166,22 @@ class AbstractPDMPlanner(AbstractPlanner, ABC):
             if lane_id in self._route_lane_dict.keys():
                 # collect baseline path as array
                 lane_object = self._route_lane_dict[lane_id]
-                lane_discrete_path: List[StateSE2] = lane_object.baseline_path.discrete_path
+                lane_discrete_path: List[
+                    StateSE2
+                ] = lane_object.baseline_path.discrete_path
                 lane_state_se2_array = np.array(
                     [state.array for state in lane_discrete_path], dtype=np.float64
                 )
                 # calculate nearest state on baseline
-                lane_distances = (ego_position_array[None, ...] - lane_state_se2_array) ** 2
+                lane_distances = (
+                    ego_position_array[None, ...] - lane_state_se2_array
+                ) ** 2
                 lane_distances = lane_distances.sum(axis=-1) ** 0.5
 
                 # calculate heading error
-                heading_error = lane_discrete_path[np.argmin(lane_distances)].heading - ego_heading
+                heading_error = (
+                    lane_discrete_path[np.argmin(lane_distances)].heading - ego_heading
+                )
                 heading_error = np.abs(normalize_angle(heading_error))
 
                 # add lane to candidates

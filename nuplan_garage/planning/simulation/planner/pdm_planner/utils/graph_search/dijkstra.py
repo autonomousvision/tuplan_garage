@@ -1,4 +1,5 @@
 from typing import Dict, List, Optional, Tuple
+
 import numpy as np
 from nuplan.common.maps.abstract_map_objects import (
     LaneGraphEdgeMapObject,
@@ -12,7 +13,9 @@ class Dijkstra:
     The goal condition is specified to be if the lane can be found at the target roadblock or roadblock connector.
     """
 
-    def __init__(self, start_edge: LaneGraphEdgeMapObject, candidate_lane_edge_ids: List[str]):
+    def __init__(
+        self, start_edge: LaneGraphEdgeMapObject, candidate_lane_edge_ids: List[str]
+    ):
         """
         Constructor for the Dijkstra class.
         :param start_edge: The starting edge for the search
@@ -69,11 +72,14 @@ class Dijkstra:
 
             # Populate queue
             for next_edge in current_edge.outgoing_edges:
-                if not next_edge.id in self._candidate_lane_edge_ids:
+                if next_edge.id not in self._candidate_lane_edge_ids:
                     continue
 
                 alt = dist + self._edge_cost(next_edge)
-                if next_edge.id not in self._expanded_id and next_edge.id not in self._frontier:
+                if (
+                    next_edge.id not in self._expanded_id
+                    and next_edge.id not in self._frontier
+                ):
                     self._parent[next_edge.id] = current_edge
                     self._queue.append(next_edge)
                     self._frontier.append(next_edge.id)
@@ -92,7 +98,9 @@ class Dijkstra:
         if not path_found:
             # filter max depth
             max_depth = max(self._expanded_depth)
-            idx_max_depth = list(np.where(np.array(self._expanded_depth) == max_depth)[0])
+            idx_max_depth = list(
+                np.where(np.array(self._expanded_depth) == max_depth)[0]
+            )
             dist_at_max_depth = [self._expanded_dist[i] for i in idx_max_depth]
 
             dist, _idx = min((val, idx) for (idx, val) in enumerate(dist_at_max_depth))
@@ -133,7 +141,9 @@ class Dijkstra:
         """
         return current_edge.get_roadblock_id() == target_roadblock.id
 
-    def _construct_path(self, end_edge: LaneGraphEdgeMapObject) -> List[LaneGraphEdgeMapObject]:
+    def _construct_path(
+        self, end_edge: LaneGraphEdgeMapObject
+    ) -> List[LaneGraphEdgeMapObject]:
         """
         :param end_edge: The end edge to start back propagating back to the start edge.
         :param depth: The depth of the target edge.

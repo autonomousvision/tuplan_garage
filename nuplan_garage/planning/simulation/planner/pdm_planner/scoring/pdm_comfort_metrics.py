@@ -2,11 +2,11 @@ from typing import Optional
 
 import numpy as np
 import numpy.typing as npt
-
 from scipy.signal import savgol_filter
 
-from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_enums import StateIndex
-
+from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_enums import (
+    StateIndex,
+)
 
 # TODO: Refactor & add to config
 
@@ -57,7 +57,8 @@ def _extract_ego_acceleration(
 
     elif acceleration_coordinate == "magnitude":
         acceleration: npt.NDArray[np.float64] = np.hypot(
-            states[..., StateIndex.ACCELERATION_X], states[..., StateIndex.ACCELERATION_Y]
+            states[..., StateIndex.ACCELERATION_X],
+            states[..., StateIndex.ACCELERATION_Y],
         )
     else:
         raise ValueError(
@@ -66,7 +67,10 @@ def _extract_ego_acceleration(
         )
 
     acceleration = savgol_filter(
-        acceleration, polyorder=poly_order, window_length=min(window_length, n_time), axis=-1
+        acceleration,
+        polyorder=poly_order,
+        window_length=min(window_length, n_time),
+        axis=-1,
     )
     acceleration = np.round(acceleration, decimals=decimals)
     return acceleration
@@ -127,7 +131,10 @@ def _extract_ego_yaw_rate(
     """
     ego_headings = states[..., StateIndex.HEADING]
     ego_yaw_rate = _approximate_derivatives(
-        _phase_unwrap(ego_headings), time_steps_s, deriv_order=deriv_order, poly_order=poly_order
+        _phase_unwrap(ego_headings),
+        time_steps_s,
+        deriv_order=deriv_order,
+        poly_order=poly_order,
     )  # convert to seconds
     ego_yaw_rate = np.round(ego_yaw_rate, decimals=decimals)
     return ego_yaw_rate
@@ -149,7 +156,9 @@ def _phase_unwrap(headings: npt.NDArray[np.float32]) -> npt.NDArray[np.float32]:
     # So adjustments[j+1] - adjustments[j] = round((headings[j+1] - headings[j]) / (2*pi)).
     two_pi = 2.0 * np.pi
     adjustments = np.zeros_like(headings)
-    adjustments[..., 1:] = np.cumsum(np.round(np.diff(headings, axis=-1) / two_pi), axis=-1)
+    adjustments[..., 1:] = np.cumsum(
+        np.round(np.diff(headings, axis=-1) / two_pi), axis=-1
+    )
     unwrapped = headings - two_pi * adjustments
     return unwrapped
 
@@ -188,7 +197,12 @@ def _approximate_derivatives(
 
     dx = dx.mean()
     derivative: npt.NDArray[np.float32] = savgol_filter(
-        y, polyorder=poly_order, window_length=window_length, deriv=deriv_order, delta=dx, axis=axis
+        y,
+        polyorder=poly_order,
+        window_length=window_length,
+        deriv=deriv_order,
+        delta=dx,
+        axis=axis,
     )
     return derivative
 
@@ -225,7 +239,9 @@ def _compute_lon_acceleration(
     lon_acceleration = _extract_ego_acceleration(
         states, acceleration_coordinate="x", window_length=n_time
     )
-    return _within_bound(lon_acceleration, min_bound=min_lon_accel, max_bound=max_lon_accel)
+    return _within_bound(
+        lon_acceleration, min_bound=min_lon_accel, max_bound=max_lon_accel
+    )
 
 
 def _compute_lat_acceleration(
@@ -241,7 +257,9 @@ def _compute_lat_acceleration(
     lat_acceleration = _extract_ego_acceleration(
         states, acceleration_coordinate="y", window_length=n_time
     )
-    return _within_bound(lat_acceleration, min_bound=-max_abs_lat_accel, max_bound=max_abs_lat_accel)
+    return _within_bound(
+        lat_acceleration, min_bound=-max_abs_lat_accel, max_bound=max_abs_lat_accel
+    )
 
 
 def _compute_jerk_metric(
@@ -255,9 +273,14 @@ def _compute_jerk_metric(
     """
     n_batch, n_time, n_states = states.shape
     jerk_metric = _extract_ego_jerk(
-        states, acceleration_coordinate="magnitude", time_steps_s=time_steps_s, window_length=n_time
+        states,
+        acceleration_coordinate="magnitude",
+        time_steps_s=time_steps_s,
+        window_length=n_time,
     )
-    return _within_bound(jerk_metric, min_bound=-max_abs_mag_jerk, max_bound=max_abs_mag_jerk)
+    return _within_bound(
+        jerk_metric, min_bound=-max_abs_mag_jerk, max_bound=max_abs_mag_jerk
+    )
 
 
 def _compute_lon_jerk_metric(
@@ -271,9 +294,14 @@ def _compute_lon_jerk_metric(
     """
     n_batch, n_time, n_states = states.shape
     lon_jerk_metric = _extract_ego_jerk(
-        states, acceleration_coordinate="x", time_steps_s=time_steps_s, window_length=n_time
+        states,
+        acceleration_coordinate="x",
+        time_steps_s=time_steps_s,
+        window_length=n_time,
     )
-    return _within_bound(lon_jerk_metric, min_bound=-max_abs_lon_jerk, max_bound=max_abs_lon_jerk)
+    return _within_bound(
+        lon_jerk_metric, min_bound=-max_abs_lon_jerk, max_bound=max_abs_lon_jerk
+    )
 
 
 def _compute_yaw_accel(
@@ -289,7 +317,9 @@ def _compute_yaw_accel(
     yaw_accel_metric = _extract_ego_yaw_rate(
         states, time_steps_s, deriv_order=2, poly_order=3, window_length=n_time
     )
-    return _within_bound(yaw_accel_metric, min_bound=-max_abs_yaw_accel, max_bound=max_abs_yaw_accel)
+    return _within_bound(
+        yaw_accel_metric, min_bound=-max_abs_yaw_accel, max_bound=max_abs_yaw_accel
+    )
 
 
 def _compute_yaw_rate(
@@ -303,7 +333,9 @@ def _compute_yaw_rate(
     """
     n_batch, n_time, n_states = states.shape
     yaw_rate_metric = _extract_ego_yaw_rate(states, time_steps_s, window_length=n_time)
-    return _within_bound(yaw_rate_metric, min_bound=-max_abs_yaw_rate, max_bound=max_abs_yaw_rate)
+    return _within_bound(
+        yaw_rate_metric, min_bound=-max_abs_yaw_rate, max_bound=max_abs_yaw_rate
+    )
 
 
 def ego_is_comfortable(
@@ -314,7 +346,7 @@ def ego_is_comfortable(
     :param states: array representation of ego state values
     :param time_point_s: time steps [s] of time dim
     :return: _description_
-    """    
+    """
     n_batch, n_time, n_states = states.shape
     assert n_time == len(time_point_s)
     assert n_states == StateIndex.size()

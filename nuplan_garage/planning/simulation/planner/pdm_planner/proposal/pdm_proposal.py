@@ -3,7 +3,9 @@ from typing import List
 
 from shapely.geometry import LineString
 
-from nuplan_garage.planning.simulation.planner.pdm_planner.proposal.batch_idm_policy import BatchIDMPolicy
+from nuplan_garage.planning.simulation.planner.pdm_planner.proposal.batch_idm_policy import (
+    BatchIDMPolicy,
+)
 from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_path import PDMPath
 
 

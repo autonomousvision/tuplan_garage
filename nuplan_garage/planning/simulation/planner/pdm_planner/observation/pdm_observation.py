@@ -1,9 +1,7 @@
 from typing import Dict, List, Optional, Tuple
 
-from shapely.geometry import Polygon
-import shapely.creation
-
 import numpy as np
+import shapely.creation
 from nuplan.common.actor_state.ego_state import EgoState
 from nuplan.common.actor_state.tracked_objects import TrackedObject
 from nuplan.common.actor_state.tracked_objects_types import TrackedObjectType
@@ -13,6 +11,8 @@ from nuplan.common.maps.maps_datatypes import (
     TrafficLightStatusType,
 )
 from nuplan.planning.simulation.observation.observation_type import Observation
+from nuplan.planning.simulation.trajectory.trajectory_sampling import TrajectorySampling
+from shapely.geometry import Polygon
 
 from nuplan_garage.planning.simulation.planner.pdm_planner.observation.pdm_object_manager import (
     PDMObjectManager,
@@ -20,9 +20,10 @@ from nuplan_garage.planning.simulation.planner.pdm_planner.observation.pdm_objec
 from nuplan_garage.planning.simulation.planner.pdm_planner.observation.pdm_occupancy_map import (
     PDMOccupancyMap,
 )
-from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_enums import BBCoordsIndex
+from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_enums import (
+    BBCoordsIndex,
+)
 
-from nuplan.planning.simulation.trajectory.trajectory_sampling import TrajectorySampling
 
 class PDMObservation:
     """PDM's observation class for forecasted occupancy maps."""
@@ -44,13 +45,14 @@ class PDMObservation:
         assert (
             trajectory_sampling.interval_length == proposal_sampling.interval_length
         ), "PDMObservation: Proposals and Trajectory must have equal interval length!"
-        
+
         # observation needs length of trajectory horizon or proposal horizon +1s (for TTC metric)
         self._sample_interval: float = trajectory_sampling.interval_length  # [s]
 
         self._observation_samples: int = (
             proposal_sampling.num_poses + int(1 / self._sample_interval)
-            if proposal_sampling.num_poses + int(1 / self._sample_interval) > trajectory_sampling.num_poses
+            if proposal_sampling.num_poses + int(1 / self._sample_interval)
+            > trajectory_sampling.num_poses
             else trajectory_sampling.num_poses
         )
 
@@ -130,9 +132,10 @@ class PDMObservation:
         self._occupancy_maps: List[PDMOccupancyMap] = []
         self._object_manager = self._get_object_manager(ego_state, observation)
 
-        traffic_light_tokens, traffic_light_polygons = self._get_traffic_light_geometries(
-            traffic_light_data, route_lane_dict
-        )
+        (
+            traffic_light_tokens,
+            traffic_light_polygons,
+        ) = self._get_traffic_light_geometries(traffic_light_data, route_lane_dict)
 
         (
             static_object_tokens,
@@ -183,14 +186,22 @@ class PDMObservation:
                 dynamic_object_coords_t = (
                     dynamic_object_coords + delta_t * dynamic_object_dxy[:, None]
                 )
-                dynamic_object_polygons = shapely.creation.polygons(dynamic_object_coords_t)
+                dynamic_object_polygons = shapely.creation.polygons(
+                    dynamic_object_coords_t
+                )
 
             all_polygons = np.concatenate(
-                [static_object_polygons, dynamic_object_polygons, traffic_light_polygons], axis=0
+                [
+                    static_object_polygons,
+                    dynamic_object_polygons,
+                    traffic_light_polygons,
+                ],
+                axis=0,
             )
 
             occupancy_map = PDMOccupancyMap(
-                static_object_tokens + dynamic_object_tokens + traffic_light_tokens, all_polygons
+                static_object_tokens + dynamic_object_tokens + traffic_light_tokens,
+                all_polygons,
             )
             self._occupancy_maps.append(occupancy_map)
 
@@ -201,7 +212,9 @@ class PDMObservation:
 
         for intersecting_obstacle in intersecting_obstacles:
             if self._red_light_token in intersecting_obstacle:
-                within = ego_polygon.within(self._occupancy_maps[0][intersecting_obstacle])
+                within = ego_polygon.within(
+                    self._occupancy_maps[0][intersecting_obstacle]
+                )
                 if not within:
                     continue
             new_collided_track_ids.append(intersecting_obstacle)
@@ -255,7 +268,9 @@ class PDMObservation:
                 lane_connector_id in route_lane_dict.keys()
             ):
                 lane_connector = route_lane_dict[lane_connector_id]
-                traffic_light_tokens.append(f"{self._red_light_token}_{lane_connector_id}")
+                traffic_light_tokens.append(
+                    f"{self._red_light_token}_{lane_connector_id}"
+                )
                 traffic_light_polygons.append(lane_connector.polygon)
 
         return traffic_light_tokens, traffic_light_polygons

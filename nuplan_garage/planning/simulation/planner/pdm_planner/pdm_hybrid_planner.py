@@ -1,23 +1,32 @@
 import gc
 import logging
+import warnings
 from typing import List, Optional, Type, cast
 
 import torch
-from nuplan.planning.simulation.trajectory.interpolated_trajectory import InterpolatedTrajectory
-
-
 from nuplan.common.actor_state.ego_state import EgoState
-from nuplan.common.actor_state.state_representation import TimePoint, TimeDuration
-from nuplan.planning.utils.serialization.scene import Trajectory
-from nuplan.planning.simulation.observation.observation_type import Observation
-from nuplan.planning.simulation.planner.abstract_planner import PlannerInitialization, PlannerInput
-from nuplan.planning.simulation.trajectory.abstract_trajectory import AbstractTrajectory
-from nuplan.planning.simulation.trajectory.trajectory_sampling import TrajectorySampling
+from nuplan.common.actor_state.state_representation import TimeDuration, TimePoint
+from nuplan.planning.simulation.observation.observation_type import (
+    DetectionsTracks,
+    Observation,
+)
+from nuplan.planning.simulation.planner.abstract_planner import (
+    PlannerInitialization,
+    PlannerInput,
+)
 from nuplan.planning.simulation.planner.ml_planner.transform_utils import (
     transform_predictions_to_states,
 )
+from nuplan.planning.simulation.trajectory.abstract_trajectory import AbstractTrajectory
+from nuplan.planning.simulation.trajectory.interpolated_trajectory import (
+    InterpolatedTrajectory,
+)
+from nuplan.planning.simulation.trajectory.trajectory_sampling import TrajectorySampling
+from nuplan.planning.training.modeling.lightning_module_wrapper import (
+    LightningModuleWrapper,
+)
 from nuplan.planning.training.modeling.torch_module_wrapper import TorchModuleWrapper
-from nuplan.planning.training.modeling.lightning_module_wrapper import LightningModuleWrapper
+from nuplan.planning.utils.serialization.scene import Trajectory
 
 from nuplan_garage.planning.simulation.planner.pdm_planner.abstract_pdm_closed_planner import (
     AbstractPDMClosedPlanner,
@@ -28,9 +37,6 @@ from nuplan_garage.planning.simulation.planner.pdm_planner.observation.pdm_obser
 from nuplan_garage.planning.simulation.planner.pdm_planner.proposal.batch_idm_policy import (
     BatchIDMPolicy,
 )
-
-import warnings
-
 from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_feature_utils import (
     create_pdm_feature,
 )
@@ -105,7 +111,9 @@ class PDMHybridPlanner(AbstractPDMClosedPlanner):
         """Inherited, see superclass."""
         return DetectionsTracks  # type: ignore
 
-    def compute_planner_trajectory(self, current_input: PlannerInput) -> AbstractTrajectory:
+    def compute_planner_trajectory(
+        self, current_input: PlannerInput
+    ) -> AbstractTrajectory:
         """Inherited, see superclass."""
 
         gc.disable()
@@ -116,8 +124,10 @@ class PDMHybridPlanner(AbstractPDMClosedPlanner):
             self._route_roadblock_correction(ego_state)
 
         # Update/Create drivable area polygon map
-        self._drivable_area_map = get_drivable_area_map(self._map_api, ego_state, self._map_radius)
-        
+        self._drivable_area_map = get_drivable_area_map(
+            self._map_api, ego_state, self._map_radius
+        )
+
         # Create centerline
         current_lane = self._get_starting_lane(ego_state)
         self._centerline = PDMPath(self._get_discrete_centerline(current_lane))
@@ -128,10 +138,16 @@ class PDMHybridPlanner(AbstractPDMClosedPlanner):
 
         # trajectory of PDM-Offset
         pdm_feature = create_pdm_feature(
-            self._model, current_input, self._centerline, closed_loop_trajectory, self._device
+            self._model,
+            current_input,
+            self._centerline,
+            closed_loop_trajectory,
+            self._device,
         )
         predictions = self._model.forward({"pdm_features": pdm_feature})
-        trajectory_data = cast(Trajectory, predictions["trajectory"]).data.cpu().detach().numpy()[0]
+        trajectory_data = (
+            cast(Trajectory, predictions["trajectory"]).data.cpu().detach().numpy()[0]
+        )
         corrected_states = transform_predictions_to_states(
             trajectory_data,
             current_input.history.ego_states,
@@ -140,7 +156,9 @@ class PDMHybridPlanner(AbstractPDMClosedPlanner):
         )
 
         # apply correction by fusing
-        trajectory = self._apply_trajectory_correction(uncorrected_states, corrected_states)
+        trajectory = self._apply_trajectory_correction(
+            uncorrected_states, corrected_states
+        )
         self._iteration += 1
         return trajectory
 
@@ -157,8 +175,12 @@ class PDMHybridPlanner(AbstractPDMClosedPlanner):
         """
 
         # split trajectory
-        uncorrected_duration: TimeDuration = TimeDuration.from_s(self._correction_horizon)
-        cutting_time_point: TimePoint = uncorrected_states[0].time_point + uncorrected_duration
+        uncorrected_duration: TimeDuration = TimeDuration.from_s(
+            self._correction_horizon
+        )
+        cutting_time_point: TimePoint = (
+            uncorrected_states[0].time_point + uncorrected_duration
+        )
 
         uncorrected_split = [
             ego_state
@@ -167,7 +189,9 @@ class PDMHybridPlanner(AbstractPDMClosedPlanner):
         ]
 
         corrected_split = [
-            ego_state for ego_state in corrected_states if ego_state.time_point > cutting_time_point
+            ego_state
+            for ego_state in corrected_states
+            if ego_state.time_point > cutting_time_point
         ]
 
         return InterpolatedTrajectory(uncorrected_split + corrected_split)

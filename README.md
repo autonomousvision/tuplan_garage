@@ -8,7 +8,7 @@
 
 > [**Parting with Misconceptions about Learning-based Vehicle Motion Planning**](https://arxiv.org/abs/2306.07962)  <br>
 > [Daniel Dauner](https://danieldauner.github.io/)<sup>1,2</sup>, [Marcel Hallgarten](https://mh0797.github.io/)<sup>1,3</sup>, [Andreas Geiger](https://www.cvlibs.net/)<sup>1,2</sup>, and [Kashyap Chitta](https://kashyap7x.github.io/)<sup>1,2</sup>  <br>
-> <sup>1</sup> University of Tübingen, <sup>2</sup> Tübingen AI Center, <sup>3</sup> Robert Bosch GmbH 
+> <sup>1</sup> University of Tübingen, <sup>2</sup> Tübingen AI Center, <sup>3</sup> Robert Bosch GmbH
 >
 > This repo is intended to serve as a starting point for vehicle motion planning research on [nuPlan](https://github.com/motional/nuplan-devkit). We provide a publicly accesible configuration for validation, comprehensive set of baselines, and pre-trained planning models.
 
@@ -18,8 +18,8 @@ https://github.com/autonomousvision/nuplan_garage/assets/22528226/f91e9ce2-ae3d-
 
 ## News
 * **`04 Jul, 2023`:**  We released the code and models for our ML planners. Additional baselines and a contribution guide are coming soon, please stay tuned!
-* **`26 Jun, 2023`:** We released our [supplementary material](https://danieldauner.github.io/assets/pdf/suppmat/suppmat_dauner2023parting.pdf) and the code for PDM-Closed. 
-* **`14 Jun, 2023`:** We released our paper on [arXiv](https://arxiv.org/abs/2306.07962). 
+* **`26 Jun, 2023`:** We released our [supplementary material](https://danieldauner.github.io/assets/pdf/suppmat/suppmat_dauner2023parting.pdf) and the code for PDM-Closed.
+* **`14 Jun, 2023`:** We released our paper on [arXiv](https://arxiv.org/abs/2306.07962).
 * **`2 Jun, 2023`:** Our approach won the [2023 nuPlan Challenge](https://opendrivelab.com/AD23Challenge.html#nuplan_planning)!
 
 <br/>
@@ -69,7 +69,7 @@ Planning results on the proposed *Val14* benchmark. Please refer to the [paper](
 - [ ] Contribution guide
 - [x] ML planners code & checkpoints
 - [x] Supplementary material, video, slides
-- [x] Val14 benchmark 
+- [x] Val14 benchmark
 - [x] Installation tutorial
 - [x] PDM-Closed release
 - [x] Initial repo & main paper
@@ -78,7 +78,7 @@ Planning results on the proposed *Val14* benchmark. Please refer to the [paper](
 ## Getting started
 
 ### 1. Installation
-To install nuPlan garage, please follow these steps: 
+To install nuPlan garage, please follow these steps:
 - setup the nuPlan dataset ([described here](https://nuplan-devkit.readthedocs.io/en/latest/dataset_setup.html)) and install the nuPlan devkit ([see here](https://nuplan-devkit.readthedocs.io/en/latest/installation.html))
 - download nuPlan Garage and move inside the folder
 ```

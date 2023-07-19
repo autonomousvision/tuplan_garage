@@ -1,11 +1,15 @@
 import copy
+
 import numpy as np
 import numpy.typing as npt
-
 from nuplan.common.actor_state.ego_state import EgoState
 from nuplan.common.actor_state.state_representation import TimePoint
-from nuplan.common.actor_state.vehicle_parameters import VehicleParameters, get_pacifica_parameters
+from nuplan.common.actor_state.vehicle_parameters import (
+    VehicleParameters,
+    get_pacifica_parameters,
+)
 from nuplan.common.geometry.compute import principal_value
+
 from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_enums import (
     DynamicStateIndex,
     StateIndex,
@@ -13,7 +17,9 @@ from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_enums impor
 
 
 def forward_integrate(
-    init: npt.NDArray[np.float64], delta: npt.NDArray[np.float64], sampling_time: TimePoint
+    init: npt.NDArray[np.float64],
+    delta: npt.NDArray[np.float64],
+    sampling_time: TimePoint,
 ) -> npt.NDArray[np.float64]:
     """
     Performs a simple euler integration.
@@ -59,8 +65,12 @@ class BatchKinematicBicycleModel:
 
         longitudinal_speeds = states[:, StateIndex.VELOCITY_X]
 
-        state_dots[:, StateIndex.X] = longitudinal_speeds * np.cos(states[:, StateIndex.HEADING])
-        state_dots[:, StateIndex.Y] = longitudinal_speeds * np.sin(states[:, StateIndex.HEADING])
+        state_dots[:, StateIndex.X] = longitudinal_speeds * np.cos(
+            states[:, StateIndex.HEADING]
+        )
+        state_dots[:, StateIndex.Y] = longitudinal_speeds * np.sin(
+            states[:, StateIndex.HEADING]
+        )
         state_dots[:, StateIndex.HEADING] = (
             longitudinal_speeds
             * np.tan(states[:, StateIndex.STEERING_ANGLE])
@@ -98,11 +108,15 @@ class BatchKinematicBicycleModel:
 
         ideal_accel_x = command_states[:, DynamicStateIndex.ACCELERATION_X]
         ideal_steering_angle = (
-            dt_control * command_states[:, DynamicStateIndex.STEERING_RATE] + steering_angle
+            dt_control * command_states[:, DynamicStateIndex.STEERING_RATE]
+            + steering_angle
         )
 
         updated_accel_x = (
-            dt_control / (dt_control + self._accel_time_constant) * (ideal_accel_x - accel) + accel
+            dt_control
+            / (dt_control + self._accel_time_constant)
+            * (ideal_accel_x - accel)
+            + accel
         )
         updated_steering_angle = (
             dt_control
@@ -130,7 +144,7 @@ class BatchKinematicBicycleModel:
         :param command_states: command array representation of controller
         :param sampling_time: time to propagate [s]
         :return: updated tate array representation of the ego-vehicle
-        """        
+        """
 
         assert len(states) == len(
             command_states
@@ -151,12 +165,16 @@ class BatchKinematicBicycleModel:
 
         output_state[:, StateIndex.HEADING] = principal_value(
             forward_integrate(
-                states[:, StateIndex.HEADING], state_dot[:, StateIndex.HEADING], sampling_time
+                states[:, StateIndex.HEADING],
+                state_dot[:, StateIndex.HEADING],
+                sampling_time,
             )
         )
 
         output_state[:, StateIndex.VELOCITY_X] = forward_integrate(
-            states[:, StateIndex.VELOCITY_X], state_dot[:, StateIndex.VELOCITY_X], sampling_time
+            states[:, StateIndex.VELOCITY_X],
+            state_dot[:, StateIndex.VELOCITY_X],
+            sampling_time,
         )
 
         # Lateral velocity is always zero in kinematic bicycle model
@@ -179,12 +197,17 @@ class BatchKinematicBicycleModel:
             / self._vehicle.wheel_base
         )
 
-        output_state[:, StateIndex.ACCELERATION_2D] = state_dot[:, StateIndex.VELOCITY_2D]
+        output_state[:, StateIndex.ACCELERATION_2D] = state_dot[
+            :, StateIndex.VELOCITY_2D
+        ]
 
         output_state[:, StateIndex.ANGULAR_ACCELERATION] = (
-            output_state[:, StateIndex.ANGULAR_VELOCITY] - states[:, StateIndex.ANGULAR_VELOCITY]
+            output_state[:, StateIndex.ANGULAR_VELOCITY]
+            - states[:, StateIndex.ANGULAR_VELOCITY]
         ) / sampling_time.time_s
 
-        output_state[:, StateIndex.STEERING_RATE] = state_dot[:, StateIndex.STEERING_ANGLE]
+        output_state[:, StateIndex.STEERING_RATE] = state_dot[
+            :, StateIndex.STEERING_ANGLE
+        ]
 
         return output_state

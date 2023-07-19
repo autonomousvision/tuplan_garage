@@ -4,13 +4,12 @@ from dataclasses import dataclass
 from typing import Any, Dict, List
 
 import torch
-
+from nuplan.planning.script.builders.utils.utils_type import validate_type
 from nuplan.planning.training.preprocessing.features.abstract_model_feature import (
     AbstractModelFeature,
     FeatureDataType,
     to_tensor,
 )
-from nuplan.planning.script.builders.utils.utils_type import validate_type
 
 
 @dataclass
@@ -113,7 +112,7 @@ class PDMFeature(AbstractModelFeature):
         collated_acceleration = torch.stack(
             [item.ego_acceleration for item in batch], dim=0
         ).to(device)
-        
+
         collated_centerline = torch.stack(
             [item.planner_centerline for item in batch], dim=0
         ).to(device)

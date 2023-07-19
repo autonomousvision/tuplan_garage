@@ -40,7 +40,9 @@ class BatchIDMPolicy:
             accel_max,
             decel_max,
         ]
-        num_parameter_policies = [len(item) for item in parameter_list if isinstance(item, list)]
+        num_parameter_policies = [
+            len(item) for item in parameter_list if isinstance(item, list)
+        ]
 
         if len(num_parameter_policies) > 0:
             assert all(
@@ -68,11 +70,15 @@ class BatchIDMPolicy:
             (self._num_policies), dtype=np.float64
         )
 
-        self._decel_max: npt.NDArray[np.float64] = np.zeros((self._num_policies), dtype=np.float64)
+        self._decel_max: npt.NDArray[np.float64] = np.zeros(
+            (self._num_policies), dtype=np.float64
+        )
 
         for i in range(self._num_policies):
             self._fallback_target_velocities[i] = (
-                fallback_target_velocity if isinstance(fallback_target_velocity, float) else fallback_target_velocity[i]
+                fallback_target_velocity
+                if isinstance(fallback_target_velocity, float)
+                else fallback_target_velocity[i]
             )
             self._speed_limit_fractions[i] = (
                 speed_limit_fraction
@@ -87,8 +93,12 @@ class BatchIDMPolicy:
             self._headway_time[i] = (
                 headway_time if isinstance(headway_time, float) else headway_time[i]
             )
-            self._accel_max[i] = accel_max if isinstance(accel_max, float) else accel_max[i]
-            self._decel_max[i] = decel_max if isinstance(decel_max, float) else decel_max[i]
+            self._accel_max[i] = (
+                accel_max if isinstance(accel_max, float) else accel_max[i]
+            )
+            self._decel_max[i] = (
+                decel_max if isinstance(decel_max, float) else decel_max[i]
+            )
 
         # lazy loaded
         self._target_velocities: npt.NDArray[np.float64] = np.zeros(
@@ -120,7 +130,9 @@ class BatchIDMPolicy:
         if speed_limit_mps is not None:
             self._target_velocities = self._speed_limit_fractions * speed_limit_mps
         else:
-            self._target_velocities = self._speed_limit_fractions * self._fallback_target_velocities
+            self._target_velocities = (
+                self._speed_limit_fractions * self._fallback_target_velocities
+            )
 
     def propagate(
         self,
@@ -136,7 +148,7 @@ class BatchIDMPolicy:
         :param longitudinal_idcs: indices of policies to be applied over a batch-dim
         :param sampling_time: time to propagate forward [s]
         :return: array containing propagated state values
-        """        
+        """
 
         assert len(previous_idm_states) == len(longitudinal_idcs) and len(
             leading_agent_states
@@ -182,7 +194,9 @@ class BatchIDMPolicy:
         # differential equations
         x_agent_dot = v_agent
         v_agent_dot = accel_max * (
-            1 - (v_agent / target_velocity) ** acceleration_exponent - (s_star / s_alpha) ** 2
+            1
+            - (v_agent / target_velocity) ** acceleration_exponent
+            - (s_star / s_alpha) ** 2
         )
 
         # clip values
@@ -191,7 +205,11 @@ class BatchIDMPolicy:
         next_idm_states: npt.NDArray[np.float64] = np.zeros(
             (len(longitudinal_idcs), len(StateIDMIndex)), dtype=np.float64
         )
-        next_idm_states[:, StateIDMIndex.PROGRESS] = x_agent + sampling_time * x_agent_dot
-        next_idm_states[:, StateIDMIndex.VELOCITY] = v_agent + sampling_time * v_agent_dot
+        next_idm_states[:, StateIDMIndex.PROGRESS] = (
+            x_agent + sampling_time * x_agent_dot
+        )
+        next_idm_states[:, StateIDMIndex.VELOCITY] = (
+            v_agent + sampling_time * v_agent_dot
+        )
 
         return next_idm_states

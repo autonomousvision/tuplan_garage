@@ -1,19 +1,29 @@
 import gc
 import logging
+import warnings
 from typing import Type, cast
 
 import torch
-
-from nuplan.planning.utils.serialization.scene import Trajectory
-from nuplan.planning.training.modeling.torch_module_wrapper import TorchModuleWrapper
-from nuplan.planning.training.modeling.lightning_module_wrapper import LightningModuleWrapper
-from nuplan.planning.simulation.observation.observation_type import Observation
-from nuplan.planning.simulation.planner.abstract_planner import PlannerInitialization, PlannerInput
-from nuplan.planning.simulation.trajectory.abstract_trajectory import AbstractTrajectory
+from nuplan.planning.simulation.observation.observation_type import (
+    DetectionsTracks,
+    Observation,
+)
+from nuplan.planning.simulation.planner.abstract_planner import (
+    PlannerInitialization,
+    PlannerInput,
+)
 from nuplan.planning.simulation.planner.ml_planner.transform_utils import (
     transform_predictions_to_states,
 )
-from nuplan.planning.simulation.trajectory.interpolated_trajectory import InterpolatedTrajectory
+from nuplan.planning.simulation.trajectory.abstract_trajectory import AbstractTrajectory
+from nuplan.planning.simulation.trajectory.interpolated_trajectory import (
+    InterpolatedTrajectory,
+)
+from nuplan.planning.training.modeling.lightning_module_wrapper import (
+    LightningModuleWrapper,
+)
+from nuplan.planning.training.modeling.torch_module_wrapper import TorchModuleWrapper
+from nuplan.planning.utils.serialization.scene import Trajectory
 
 from nuplan_garage.planning.simulation.planner.pdm_planner.abstract_pdm_planner import (
     AbstractPDMPlanner,
@@ -26,7 +36,6 @@ from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_feature_uti
 )
 from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_path import PDMPath
 
-import warnings
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 logger = logging.getLogger(__name__)
@@ -78,7 +87,9 @@ class PDMOpenPlanner(AbstractPDMPlanner):
         """Inherited, see superclass."""
         return DetectionsTracks  # type: ignore
 
-    def compute_planner_trajectory(self, current_input: PlannerInput) -> AbstractTrajectory:
+    def compute_planner_trajectory(
+        self, current_input: PlannerInput
+    ) -> AbstractTrajectory:
         """Inherited, see superclass."""
 
         gc.disable()
@@ -89,7 +100,9 @@ class PDMOpenPlanner(AbstractPDMPlanner):
             self._route_roadblock_correction(ego_state)
 
         # Update/Create drivable area polygon map
-        self._drivable_area_map = get_drivable_area_map(self._map_api, ego_state, self._map_radius)
+        self._drivable_area_map = get_drivable_area_map(
+            self._map_api, ego_state, self._map_radius
+        )
 
         # Create centerline
         current_lane = self._get_starting_lane(ego_state)
@@ -113,6 +126,6 @@ class PDMOpenPlanner(AbstractPDMPlanner):
                 self._model.trajectory_sampling.step_time,
             )
         )
-        
+
         self._iteration += 1
         return trajectory

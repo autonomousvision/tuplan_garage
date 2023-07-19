@@ -1,8 +1,10 @@
 import numpy as np
 import numpy.typing as npt
-
 from nuplan.common.actor_state.ego_state import EgoState
-from nuplan.common.actor_state.state_representation import TimePoint, TimeDuration
+from nuplan.common.actor_state.state_representation import TimeDuration, TimePoint
+from nuplan.planning.simulation.simulation_time_controller.simulation_iteration import (
+    SimulationIteration,
+)
 from nuplan.planning.simulation.trajectory.trajectory_sampling import TrajectorySampling
 
 from nuplan_garage.planning.simulation.planner.pdm_planner.simulation.batch_kinematic_bicycle import (
@@ -13,9 +15,6 @@ from nuplan_garage.planning.simulation.planner.pdm_planner.simulation.batch_lqr 
 )
 from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_array_representation import (
     ego_state_to_state_array,
-)
-from nuplan.planning.simulation.simulation_time_controller.simulation_iteration import (
-    SimulationIteration,
 )
 
 
@@ -67,7 +66,9 @@ class PDMSimulator:
         next_iteration = SimulationIteration(current_time_point + delta_time_point, 1)
 
         for time_idx in range(1, self._proposal_sampling.num_poses + 1):
-            sampling_time: TimePoint = next_iteration.time_point - current_iteration.time_point
+            sampling_time: TimePoint = (
+                next_iteration.time_point - current_iteration.time_point
+            )
 
             command_states = self._tracker.track_trajectory(
                 current_iteration,

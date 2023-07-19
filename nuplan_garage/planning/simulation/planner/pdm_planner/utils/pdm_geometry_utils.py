@@ -1,9 +1,12 @@
 from typing import List
+
 import numpy as np
 import numpy.typing as npt
 from nuplan.common.actor_state.state_representation import StateSE2
 
-from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_enums import SE2Index
+from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_enums import (
+    SE2Index,
+)
 
 
 def normalize_angle(angle):
@@ -15,7 +18,9 @@ def normalize_angle(angle):
     return np.arctan2(np.sin(angle), np.cos(angle))
 
 
-def parallel_discrete_path(discrete_path: List[StateSE2], offset=float) -> List[StateSE2]:
+def parallel_discrete_path(
+    discrete_path: List[StateSE2], offset=float
+) -> List[StateSE2]:
     """
     Creates a parallel discrete path for a given offset.
     :param discrete_path: baseline path (x,y,θ)
@@ -32,7 +37,10 @@ def parallel_discrete_path(discrete_path: List[StateSE2], offset=float) -> List[
 
 
 def translate_lon_and_lat(
-    centers: npt.NDArray[np.float64], headings: npt.NDArray[np.float64], lon: float, lat: float
+    centers: npt.NDArray[np.float64],
+    headings: npt.NDArray[np.float64],
+    lon: float,
+    lat: float,
 ) -> npt.NDArray[np.float64]:
     """
     Translate the position component of an centers point array
