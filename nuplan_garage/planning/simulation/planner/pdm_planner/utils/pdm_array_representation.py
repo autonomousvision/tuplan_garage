@@ -1,11 +1,16 @@
 from typing import List
-import shapely
+
 import numpy as np
 import numpy.typing as npt
-
+import shapely
 from nuplan.common.actor_state.ego_state import EgoState
-from nuplan.common.actor_state.state_representation import StateSE2, StateVector2D, TimePoint
+from nuplan.common.actor_state.state_representation import (
+    StateSE2,
+    StateVector2D,
+    TimePoint,
+)
 from nuplan.common.actor_state.vehicle_parameters import VehicleParameters
+
 from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_enums import (
     BBCoordsIndex,
     SE2Index,
@@ -73,18 +78,27 @@ def ego_state_to_state_array(ego_state: EgoState) -> npt.NDArray[np.float64]:
     state_array = np.zeros(StateIndex.size(), dtype=np.float64)
 
     state_array[StateIndex.STATE_SE2] = ego_state.rear_axle.serialize()
-    state_array[StateIndex.VELOCITY_2D] = ego_state.dynamic_car_state.rear_axle_velocity_2d.array
+    state_array[
+        StateIndex.VELOCITY_2D
+    ] = ego_state.dynamic_car_state.rear_axle_velocity_2d.array
     state_array[
         StateIndex.ACCELERATION_2D
     ] = ego_state.dynamic_car_state.rear_axle_acceleration_2d.array
 
     state_array[StateIndex.STEERING_ANGLE] = ego_state.tire_steering_angle
-    state_array[StateIndex.STEERING_RATE] = ego_state.dynamic_car_state.tire_steering_rate
+    state_array[
+        StateIndex.STEERING_RATE
+    ] = ego_state.dynamic_car_state.tire_steering_rate
 
-    state_array[StateIndex.ANGULAR_VELOCITY] = ego_state.dynamic_car_state.angular_velocity
-    state_array[StateIndex.ANGULAR_ACCELERATION] = ego_state.dynamic_car_state.angular_acceleration
+    state_array[
+        StateIndex.ANGULAR_VELOCITY
+    ] = ego_state.dynamic_car_state.angular_velocity
+    state_array[
+        StateIndex.ANGULAR_ACCELERATION
+    ] = ego_state.dynamic_car_state.angular_acceleration
 
     return state_array
+
 
 def ego_states_to_state_array(ego_states: List[EgoState]) -> npt.NDArray[np.float64]:
     """
@@ -114,7 +128,9 @@ def state_array_to_ego_state(
     return EgoState.build_from_rear_axle(
         rear_axle_pose=StateSE2(*state_array[StateIndex.STATE_SE2]),
         rear_axle_velocity_2d=StateVector2D(*state_array[StateIndex.VELOCITY_2D]),
-        rear_axle_acceleration_2d=StateVector2D(*state_array[StateIndex.ACCELERATION_2D]),
+        rear_axle_acceleration_2d=StateVector2D(
+            *state_array[StateIndex.ACCELERATION_2D]
+        ),
         tire_steering_angle=state_array[StateIndex.STEERING_ANGLE],
         time_point=time_point,
         vehicle_parameters=vehicle_parameters,
@@ -140,7 +156,9 @@ def state_array_to_ego_states(
     ego_states_list: List[EgoState] = []
     for i, time_point in enumerate(time_points):
         state = state_array[i] if i < len(state_array) else state_array[-1]
-        ego_states_list.append(state_array_to_ego_state(state, time_point, vehicle_parameter))
+        ego_states_list.append(
+            state_array_to_ego_state(state, time_point, vehicle_parameter)
+        )
     return ego_states_list
 
 
@@ -196,7 +214,9 @@ def state_array_to_coords_array(
     return coords_array
 
 
-def coords_array_to_polygon_array(coords: npt.NDArray[np.float64]) -> npt.NDArray[np.object_]:
+def coords_array_to_polygon_array(
+    coords: npt.NDArray[np.float64],
+) -> npt.NDArray[np.object_]:
     """
     Converts multi-dim array of bounding box coords of to polygons
     :param coords: bounding box coords (including corners and center)

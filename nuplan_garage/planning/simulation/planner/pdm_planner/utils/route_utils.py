@@ -9,9 +9,12 @@ from nuplan.common.maps.maps_datatypes import SemanticMapLayer
 from nuplan.planning.simulation.occupancy_map.strtree_occupancy_map import (
     STRTreeOccupancyMapFactory,
 )
-from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_geometry_utils import normalize_angle
+
 from nuplan_garage.planning.simulation.planner.pdm_planner.utils.graph_search.bfs_roadblock import (
     BreadthFirstSearchRoadBlock,
+)
+from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_geometry_utils import (
+    normalize_angle,
 )
 
 
@@ -78,7 +81,10 @@ def get_current_roadblock_candidates(
             displacement_error = lane_state_distances[argmin]
 
             if displacement_error < lane_displacement_error:
-                lane_heading_error, lane_displacement_error = heading_error, displacement_error
+                lane_heading_error, lane_displacement_error = (
+                    heading_error,
+                    displacement_error,
+                )
 
             if (
                 heading_error < heading_error_thresh
@@ -103,7 +109,10 @@ def get_current_roadblock_candidates(
         return candidates[np.argmin(candidate_displacement_errors)], candidates
 
     # otherwise, just find any close roadblock
-    return roadblock_candidates[np.argmin(roadblock_displacement_errors)], roadblock_candidates
+    return (
+        roadblock_candidates[np.argmin(roadblock_displacement_errors)],
+        roadblock_candidates,
+    )
 
 
 def route_roadblock_correction(
@@ -154,7 +163,9 @@ def route_roadblock_correction(
             )
 
             if path_found:
-                end_roadblock_idx = np.argmax(np.array(route_roadblock_ids) == path_id[-1])
+                end_roadblock_idx = np.argmax(
+                    np.array(route_roadblock_ids) == path_id[-1]
+                )
 
                 route_roadblocks = route_roadblocks[end_roadblock_idx + 1 :]
                 route_roadblock_ids = route_roadblock_ids[end_roadblock_idx + 1 :]

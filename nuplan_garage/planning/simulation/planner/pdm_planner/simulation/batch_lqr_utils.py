@@ -3,8 +3,9 @@ from typing import Tuple
 import numpy as np
 import numpy.typing as npt
 
-from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_geometry_utils import normalize_angle
-
+from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_geometry_utils import (
+    normalize_angle,
+)
 
 # Util functions for BatchLQRTracker
 # Code re-written based on nuPlan's implementation:
@@ -33,7 +34,9 @@ def _generate_profile_from_initial_condition_and_derivatives(
     """
     assert discretization_time > 0.0, "Discretization time must be positive."
     cumsum = np.cumsum(derivatives * discretization_time, axis=-1)
-    profile = initial_condition[..., None] + np.pad(cumsum, [(0, 0), (1, 0)], mode="constant")
+    profile = initial_condition[..., None] + np.pad(
+        cumsum, [(0, 0), (1, 0)], mode="constant"
+    )
     return profile
 
 
@@ -45,7 +48,9 @@ def _get_xy_heading_displacements_from_poses(
     :param poses: <np.ndarray: num_poses, 3> A trajectory of poses (x, y, heading).
     :return: Tuple of xy displacements with shape (num_poses-1, 2) and heading displacements with shape (num_poses-1,).
     """
-    assert len(poses.shape) == 3, "Expect a 2D matrix representing a trajectory of poses."
+    assert (
+        len(poses.shape) == 3
+    ), "Expect a 2D matrix representing a trajectory of poses."
     assert (
         poses.shape[1] > 1
     ), "Cannot get displacements given an empty or single element pose trajectory."
@@ -99,17 +104,23 @@ def _fit_initial_velocity_and_acceleration_profile(
 
     batch_size = heading_profile.shape[0]
     # Core problem: minimize_x ||y-Ax||_2
-    y = xy_displacements.reshape(batch_size, -1)  # Flatten to a vector, [delta x_0, delta y_0, ...]
+    y = xy_displacements.reshape(
+        batch_size, -1
+    )  # Flatten to a vector, [delta x_0, delta y_0, ...]
 
     headings = np.array(heading_profile, dtype=np.float64)
     A_column = np.zeros(y.shape, dtype=np.float64)
     A_column[:, 0::2] = np.cos(headings)
     A_column[:, 1::2] = np.sin(headings)
 
-    A = np.repeat(A_column[..., None] * discretization_time**2, num_displacements, axis=2)
+    A = np.repeat(
+        A_column[..., None] * discretization_time**2, num_displacements, axis=2
+    )
     A[..., 0] = A_column * discretization_time
 
-    upper_triangle_mask = np.triu(np.ones((num_displacements, num_displacements), dtype=bool), k=1)
+    upper_triangle_mask = np.triu(
+        np.ones((num_displacements, num_displacements), dtype=bool), k=1
+    )
     upper_triangle_mask = np.repeat(upper_triangle_mask, 2, axis=0)
     A[:, upper_triangle_mask] = 0.0
 
@@ -117,7 +128,9 @@ def _fit_initial_velocity_and_acceleration_profile(
     # If there are M displacements, then we have M - 1 acceleration values.
     # That means we have M - 2 jerk values, thus we make a banded difference matrix of that size.
     banded_matrix = _make_banded_difference_matrix(num_displacements - 2)
-    R: npt.NDArray[np.float64] = np.block([np.zeros((len(banded_matrix), 1)), banded_matrix])
+    R: npt.NDArray[np.float64] = np.block(
+        [np.zeros((len(banded_matrix), 1)), banded_matrix]
+    )
     R = np.repeat(R[None, ...], batch_size, axis=0)
 
     A_T, R_T = np.transpose(A, (0, 2, 1)), np.transpose(R, (0, 2, 1))
@@ -154,8 +167,12 @@ def _fit_initial_curvature_and_curvature_rate_profile(
              (curvature_rate_0, ..., curvature_rate_{M-1}) for M heading displacement values.
     """
     assert discretization_time > 0.0, "Discretization time must be positive."
-    assert curvature_rate_penalty > 0.0, "Should have a positive curvature_rate_penalty."
-    assert initial_curvature_penalty > 0.0, "Should have a positive initial_curvature_penalty."
+    assert (
+        curvature_rate_penalty > 0.0
+    ), "Should have a positive curvature_rate_penalty."
+    assert (
+        initial_curvature_penalty > 0.0
+    ), "Should have a positive initial_curvature_penalty."
 
     # Core problem: minimize_x ||y-Ax||_2
     y = heading_displacements
@@ -209,9 +226,14 @@ def get_velocity_curvature_profiles_with_derivatives_from_poses(
     :param curvature_rate_penalty: A regularization parameter used to penalize curvature_rate.  Should be positive.
     :return: Profiles for velocity (N-1), acceleration (N-2), curvature (N-1), and curvature rate (N-2).
     """
-    xy_displacements, heading_displacements = _get_xy_heading_displacements_from_poses(poses)
+    xy_displacements, heading_displacements = _get_xy_heading_displacements_from_poses(
+        poses
+    )
 
-    initial_velocity, acceleration_profile = _fit_initial_velocity_and_acceleration_profile(
+    (
+        initial_velocity,
+        acceleration_profile,
+    ) = _fit_initial_velocity_and_acceleration_profile(
         xy_displacements=xy_displacements,
         heading_profile=poses[:, :-1, 2],
         discretization_time=discretization_time,
@@ -225,7 +247,10 @@ def get_velocity_curvature_profiles_with_derivatives_from_poses(
     )
 
     # Compute initial curvature + curvature rate least squares solution and extract results.  It relies on velocity fit.
-    initial_curvature, curvature_rate_profile = _fit_initial_curvature_and_curvature_rate_profile(
+    (
+        initial_curvature,
+        curvature_rate_profile,
+    ) = _fit_initial_curvature_and_curvature_rate_profile(
         heading_displacements=heading_displacements,
         velocity_profile=velocity_profile,
         discretization_time=discretization_time,
@@ -238,4 +263,9 @@ def get_velocity_curvature_profiles_with_derivatives_from_poses(
         discretization_time=discretization_time,
     )
 
-    return velocity_profile, acceleration_profile, curvature_profile, curvature_rate_profile
+    return (
+        velocity_profile,
+        acceleration_profile,
+        curvature_profile,
+        curvature_rate_profile,
+    )

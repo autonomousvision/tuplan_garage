@@ -114,6 +114,7 @@ class SE2Index(IntEnum):
     Y = 1
     HEADING = 2
 
+
 class DynamicStateIndex(IntEnum):
     """Index mapping for dynamic car state (output of controller)."""
 

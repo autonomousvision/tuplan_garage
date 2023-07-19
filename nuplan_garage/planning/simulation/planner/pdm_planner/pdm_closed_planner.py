@@ -1,11 +1,16 @@
 import gc
 import logging
+import warnings
 from typing import List, Optional, Type
 
-import numpy as np
-
-from nuplan.planning.simulation.observation.observation_type import Observation
-from nuplan.planning.simulation.planner.abstract_planner import PlannerInitialization, PlannerInput
+from nuplan.planning.simulation.observation.observation_type import (
+    DetectionsTracks,
+    Observation,
+)
+from nuplan.planning.simulation.planner.abstract_planner import (
+    PlannerInitialization,
+    PlannerInput,
+)
 from nuplan.planning.simulation.trajectory.abstract_trajectory import AbstractTrajectory
 from nuplan.planning.simulation.trajectory.trajectory_sampling import TrajectorySampling
 
@@ -18,9 +23,6 @@ from nuplan_garage.planning.simulation.planner.pdm_planner.observation.pdm_obser
 from nuplan_garage.planning.simulation.planner.pdm_planner.proposal.batch_idm_policy import (
     BatchIDMPolicy,
 )
-
-
-import warnings
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
@@ -72,7 +74,9 @@ class PDMClosedPlanner(AbstractPDMClosedPlanner):
         """Inherited, see superclass."""
         return DetectionsTracks  # type: ignore
 
-    def compute_planner_trajectory(self, current_input: PlannerInput) -> AbstractTrajectory:
+    def compute_planner_trajectory(
+        self, current_input: PlannerInput
+    ) -> AbstractTrajectory:
         """Inherited, see superclass."""
 
         gc.disable()
@@ -83,7 +87,9 @@ class PDMClosedPlanner(AbstractPDMClosedPlanner):
             self._route_roadblock_correction(ego_state)
 
         # Update/Create drivable area polygon map
-        self._drivable_area_map = get_drivable_area_map(self._map_api, ego_state, self._map_radius)
+        self._drivable_area_map = get_drivable_area_map(
+            self._map_api, ego_state, self._map_radius
+        )
 
         trajectory = self._get_closed_loop_trajectory(current_input)
 

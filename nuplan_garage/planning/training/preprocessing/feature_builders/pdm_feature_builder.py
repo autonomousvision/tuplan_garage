@@ -1,35 +1,46 @@
 from __future__ import annotations
-from typing import Optional, Type, List, Tuple
+
+from typing import List, Optional, Tuple, Type
 
 import numpy as np
 import numpy.typing as npt
-
-from shapely.geometry import Point
-
 from nuplan.common.actor_state.ego_state import EgoState
-from nuplan.common.actor_state.state_representation import StateSE2, TimePoint, TimeDuration
-from nuplan.planning.scenario_builder.abstract_scenario import AbstractScenario
-from nuplan.planning.scenario_builder.scenario_utils import sample_indices_with_time_horizon
-from nuplan.planning.simulation.history.simulation_history_buffer import SimulationHistoryBuffer
-from nuplan.planning.simulation.trajectory.interpolated_trajectory import InterpolatedTrajectory
-from nuplan.planning.simulation.observation.observation_type import DetectionsTracks
-from nuplan.planning.simulation.simulation_time_controller.simulation_iteration import (
-    SimulationIteration,
-)
-from nuplan.planning.simulation.trajectory.trajectory_sampling import TrajectorySampling
-from nuplan.planning.simulation.planner.abstract_planner import (
-    PlannerInitialization,
-    PlannerInput,
-)
-from nuplan.planning.training.preprocessing.feature_builders.abstract_feature_builder import (
-    AbstractFeatureBuilder,
-    AbstractModelFeature,
+from nuplan.common.actor_state.state_representation import (
+    StateSE2,
+    TimeDuration,
+    TimePoint,
 )
 from nuplan.planning.metrics.utils.state_extractors import (
     extract_ego_acceleration,
     extract_ego_yaw_rate,
 )
-from nuplan.planning.training.preprocessing.utils.agents_preprocessing import build_ego_features
+from nuplan.planning.scenario_builder.abstract_scenario import AbstractScenario
+from nuplan.planning.scenario_builder.scenario_utils import (
+    sample_indices_with_time_horizon,
+)
+from nuplan.planning.simulation.history.simulation_history_buffer import (
+    SimulationHistoryBuffer,
+)
+from nuplan.planning.simulation.observation.observation_type import DetectionsTracks
+from nuplan.planning.simulation.planner.abstract_planner import (
+    PlannerInitialization,
+    PlannerInput,
+)
+from nuplan.planning.simulation.simulation_time_controller.simulation_iteration import (
+    SimulationIteration,
+)
+from nuplan.planning.simulation.trajectory.interpolated_trajectory import (
+    InterpolatedTrajectory,
+)
+from nuplan.planning.simulation.trajectory.trajectory_sampling import TrajectorySampling
+from nuplan.planning.training.preprocessing.feature_builders.abstract_feature_builder import (
+    AbstractFeatureBuilder,
+    AbstractModelFeature,
+)
+from nuplan.planning.training.preprocessing.utils.agents_preprocessing import (
+    build_ego_features,
+)
+from shapely.geometry import Point
 
 from nuplan_garage.planning.simulation.planner.pdm_planner.pdm_closed_planner import (
     PDMClosedPlanner,
@@ -37,12 +48,16 @@ from nuplan_garage.planning.simulation.planner.pdm_planner.pdm_closed_planner im
 from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_array_representation import (
     ego_states_to_state_array,
 )
-from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_enums import StateIndex
+from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_enums import (
+    StateIndex,
+)
 from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_geometry_utils import (
     convert_absolute_to_relative_se2_array,
 )
 from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_path import PDMPath
-from nuplan_garage.planning.training.preprocessing.features.pdm_feature import PDMFeature
+from nuplan_garage.planning.training.preprocessing.features.pdm_feature import (
+    PDMFeature,
+)
 
 
 class PDMFeatureBuilder(AbstractFeatureBuilder):
@@ -112,7 +127,9 @@ class PDMFeatureBuilder(AbstractFeatureBuilder):
         indices = sample_indices_with_time_horizon(
             self._num_past_poses, self._past_time_horizon, history.sample_interval
         )
-        past_ego_states = [past_ego_states[-idx] for idx in reversed(indices)] + [current_ego_state]
+        past_ego_states = [past_ego_states[-idx] for idx in reversed(indices)] + [
+            current_ego_state
+        ]
 
         return self._compute_feature(past_ego_states, current_input, initialization)
 
@@ -135,7 +152,9 @@ class PDMFeatureBuilder(AbstractFeatureBuilder):
         )
 
         history = SimulationHistoryBuffer.initialize_from_scenario(
-            buffer_size=buffer_size, scenario=scenario, observation_type=DetectionsTracks
+            buffer_size=buffer_size,
+            scenario=scenario,
+            observation_type=DetectionsTracks,
         )
 
         planner_input = PlannerInput(
@@ -161,7 +180,6 @@ class PDMFeatureBuilder(AbstractFeatureBuilder):
         """
 
         current_ego_state: EgoState = ego_states[-1]
-        current_time: TimePoint = current_ego_state.time_point
         current_pose: StateSE2 = current_ego_state.rear_axle
 
         # extract ego vehicle history states
@@ -171,18 +189,28 @@ class PDMFeatureBuilder(AbstractFeatureBuilder):
 
         # run planner
         self._planner.initialize(initialization)
-        trajectory: InterpolatedTrajectory = self._planner.compute_planner_trajectory(current_input)
+        trajectory: InterpolatedTrajectory = self._planner.compute_planner_trajectory(
+            current_input
+        )
 
         # extract planner trajectory
-        future_step_time: TimeDuration = TimeDuration.from_s(self._trajectory_sampling.step_time)
+        future_step_time: TimeDuration = TimeDuration.from_s(
+            self._trajectory_sampling.step_time
+        )
         future_time_points: List[TimePoint] = [
             trajectory.start_time + future_step_time * (i + 1)
             for i in range(self._trajectory_sampling.num_poses)
         ]
-        trajectory_ego_states = trajectory.get_state_at_times(future_time_points) # sample to model trajectory 
+        trajectory_ego_states = trajectory.get_state_at_times(
+            future_time_points
+        )  # sample to model trajectory
 
-        planner_trajectory = ego_states_to_state_array(trajectory_ego_states)  # convert to array
-        planner_trajectory = planner_trajectory[..., StateIndex.STATE_SE2]  # drop values
+        planner_trajectory = ego_states_to_state_array(
+            trajectory_ego_states
+        )  # convert to array
+        planner_trajectory = planner_trajectory[
+            ..., StateIndex.STATE_SE2
+        ]  # drop values
         planner_trajectory = convert_absolute_to_relative_se2_array(
             current_pose, planner_trajectory
         )  # convert to relative coords
@@ -191,11 +219,13 @@ class PDMFeatureBuilder(AbstractFeatureBuilder):
         centerline: PDMPath = self._planner._centerline
         current_progress: float = centerline.project(Point(*current_pose.array))
         centerline_progress_values = (
-            np.arange(self._centerline_samples, dtype=np.float64) * self._centerline_interval
+            np.arange(self._centerline_samples, dtype=np.float64)
+            * self._centerline_interval
             + current_progress
         )  # distance values to interpolate
         planner_centerline = convert_absolute_to_relative_se2_array(
-            current_pose, centerline.interpolate(centerline_progress_values, as_array=True)
+            current_pose,
+            centerline.interpolate(centerline_progress_values, as_array=True),
         )  # convert to relative coords
 
         return PDMFeature(
@@ -223,8 +253,12 @@ def get_ego_velocity(ego_states: List[EgoState]) -> npt.NDArray[np.float32]:
     :param ego_states: list of ego states
     :return: array of shape (num_frames, 3)
     """
-    v_x = np.asarray([ego_state.dynamic_car_state.center_velocity_2d.x for ego_state in ego_states])
-    v_y = np.asarray([ego_state.dynamic_car_state.center_velocity_2d.y for ego_state in ego_states])
+    v_x = np.asarray(
+        [ego_state.dynamic_car_state.center_velocity_2d.x for ego_state in ego_states]
+    )
+    v_y = np.asarray(
+        [ego_state.dynamic_car_state.center_velocity_2d.y for ego_state in ego_states]
+    )
     v_yaw = extract_ego_yaw_rate(ego_states)
     return np.stack([v_x, v_y, v_yaw], axis=1)
 

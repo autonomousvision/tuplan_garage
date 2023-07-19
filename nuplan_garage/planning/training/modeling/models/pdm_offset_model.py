@@ -1,23 +1,23 @@
-from typing import List
-
 import torch
 import torch.nn as nn
 from nuplan.planning.simulation.planner.abstract_planner import AbstractPlanner
-
 from nuplan.planning.simulation.trajectory.trajectory_sampling import TrajectorySampling
 from nuplan.planning.training.modeling.torch_module_wrapper import TorchModuleWrapper
 from nuplan.planning.training.modeling.types import FeaturesType, TargetsType
-
 from nuplan.planning.training.preprocessing.features.trajectory import Trajectory
 from nuplan.planning.training.preprocessing.target_builders.ego_trajectory_target_builder import (
     EgoTrajectoryTargetBuilder,
 )
 
-from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_enums import SE2Index
+from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_enums import (
+    SE2Index,
+)
 from nuplan_garage.planning.training.preprocessing.feature_builders.pdm_feature_builder import (
     PDMFeatureBuilder,
 )
-from nuplan_garage.planning.training.preprocessing.features.pdm_feature import PDMFeature
+from nuplan_garage.planning.training.preprocessing.features.pdm_feature import (
+    PDMFeature,
+)
 
 
 class PDMOffsetModel(TorchModuleWrapper):
@@ -37,14 +37,13 @@ class PDMOffsetModel(TorchModuleWrapper):
     ):
         """
         Constructor for PDMOffset
-        :param trajectory_sampling: Sampling parameters of future trajectory 
+        :param trajectory_sampling: Sampling parameters of future trajectory
         :param history_sampling: Sampling parameters of past ego states
         :param planner: Planner for centerline extraction
         :param centerline_samples: Number of poses on the centerline, defaults to 120
         :param centerline_interval: Distance between centerline poses [m], defaults to 1.0
         :param hidden_dim: Size of the hidden dimensionality of the MLP, defaults to 512
-        """ 
-
+        """
 
         feature_builders = [
             PDMFeatureBuilder(
@@ -75,7 +74,9 @@ class PDMOffsetModel(TorchModuleWrapper):
         )
 
         self.state_encoding = nn.Sequential(
-            nn.Linear((history_sampling.num_poses + 1) * 3 * len(SE2Index), self.hidden_dim),
+            nn.Linear(
+                (history_sampling.num_poses + 1) * 3 * len(SE2Index), self.hidden_dim
+            ),
             nn.ReLU(),
         )
 
@@ -110,7 +111,7 @@ class PDMOffsetModel(TorchModuleWrapper):
                             "trajectory": Trajectory,
                         }
         """
-                
+
         input: PDMFeature = features["pdm_features"]
 
         batch_size = input.ego_position.shape[0]
@@ -120,10 +121,14 @@ class PDMOffsetModel(TorchModuleWrapper):
         ego_acceleration = input.ego_acceleration.reshape(batch_size, -1).float()
 
         # encode ego history states
-        state_features = torch.cat([ego_position, ego_velocity, ego_acceleration], dim=-1)
+        state_features = torch.cat(
+            [ego_position, ego_velocity, ego_acceleration], dim=-1
+        )
         state_encodings = self.state_encoding(state_features)
 
-        state_features = torch.cat([ego_position, ego_velocity, ego_acceleration], dim=-1)
+        state_features = torch.cat(
+            [ego_position, ego_velocity, ego_acceleration], dim=-1
+        )
         state_encodings = self.state_encoding(state_features)
 
         # encode PDM-Closed trajectory

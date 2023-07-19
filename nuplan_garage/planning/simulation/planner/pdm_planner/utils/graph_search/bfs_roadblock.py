@@ -1,5 +1,5 @@
 from collections import deque
-from typing import Dict, Optional, Tuple, Union, List
+from typing import Dict, List, Optional, Tuple, Union
 
 from nuplan.common.maps.abstract_map import AbstractMap
 from nuplan.common.maps.abstract_map_objects import RoadBlockGraphEdgeMapObject
@@ -11,7 +11,10 @@ class BreadthFirstSearchRoadBlock:
     """
 
     def __init__(
-        self, start_roadblock_id: int, map_api: Optional[AbstractMap], forward_search: str = True
+        self,
+        start_roadblock_id: int,
+        map_api: Optional[AbstractMap],
+        forward_search: str = True,
     ):
         """
         Constructor of BreadthFirstSearchRoadBlock class
@@ -74,7 +77,9 @@ class BreadthFirstSearchRoadBlock:
                 break
 
             neighbors = (
-                current_edge.outgoing_edges if self._forward_search else current_edge.incoming_edges
+                current_edge.outgoing_edges
+                if self._forward_search
+                else current_edge.incoming_edges
             )
 
             # Populate queue

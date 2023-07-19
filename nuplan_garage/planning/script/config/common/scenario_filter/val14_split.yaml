@@ -16,8 +16,8 @@ scenario_types: # List of scenario types to include
   - near_multiple_vehicles
   - changing_lane
   - following_lane_with_lead
-  
-scenario_tokens: 
+
+scenario_tokens:
   - 'fa20c34947a8558d'
   - 'cb468419f191575a'
   - '691bc6f41d6456ea'
@@ -1136,7 +1136,7 @@ scenario_tokens:
   - 'd7f65016a6795d4e'
   - '8a5fb3de4e785f87'
   - '37d66f4b3d735297'
-  
+
 log_names: ${splitter.log_splits.val}
 map_names: null
 
@@ -1151,4 +1151,3 @@ speed_noise_tolerance: null         # Value at or below which a speed change bet
 expand_scenarios: false
 remove_invalid_goals: true
 shuffle: false
-    

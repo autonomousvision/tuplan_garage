@@ -1,18 +1,23 @@
 from typing import List, Optional
+
 import numpy as np
-
-from shapely.geometry import Point
-
-from nuplan.common.actor_state.state_representation import TimePoint, TimeDuration
-from nuplan.planning.simulation.trajectory.interpolated_trajectory import InterpolatedTrajectory
-from nuplan.planning.scenario_builder.scenario_utils import sample_indices_with_time_horizon
-from nuplan.planning.training.modeling.torch_module_wrapper import TorchModuleWrapper
+from nuplan.common.actor_state.state_representation import TimeDuration, TimePoint
+from nuplan.planning.scenario_builder.scenario_utils import (
+    sample_indices_with_time_horizon,
+)
 from nuplan.planning.simulation.planner.abstract_planner import PlannerInput
+from nuplan.planning.simulation.trajectory.interpolated_trajectory import (
+    InterpolatedTrajectory,
+)
+from nuplan.planning.training.modeling.torch_module_wrapper import TorchModuleWrapper
+from shapely.geometry import Point
 
 from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_array_representation import (
     ego_states_to_state_array,
 )
-from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_enums import StateIndex
+from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_enums import (
+    StateIndex,
+)
 from nuplan_garage.planning.simulation.planner.pdm_planner.utils.pdm_geometry_utils import (
     convert_absolute_to_relative_se2_array,
 )
@@ -22,7 +27,9 @@ from nuplan_garage.planning.training.preprocessing.feature_builders.pdm_feature_
     get_ego_position,
     get_ego_velocity,
 )
-from nuplan_garage.planning.training.preprocessing.features.pdm_feature import PDMFeature
+from nuplan_garage.planning.training.preprocessing.features.pdm_feature import (
+    PDMFeature,
+)
 
 
 def create_pdm_feature(
@@ -60,9 +67,12 @@ def create_pdm_feature(
     ego_acceleration = get_ego_acceleration(sampled_past_ego_states)
 
     # extract planner centerline
-    current_progress: float = centerline.project(Point(*current_ego_state.rear_axle.array))
+    current_progress: float = centerline.project(
+        Point(*current_ego_state.rear_axle.array)
+    )
     centerline_progress_values = (
-        np.arange(model.centerline_samples, dtype=np.float64) * model.centerline_interval
+        np.arange(model.centerline_samples, dtype=np.float64)
+        * model.centerline_interval
         + current_progress
     )  # distance values to interpolate
     planner_centerline = convert_absolute_to_relative_se2_array(
@@ -72,7 +82,9 @@ def create_pdm_feature(
 
     if closed_loop_trajectory is not None:
         current_time: TimePoint = current_ego_state.time_point
-        future_step_time: TimeDuration = TimeDuration.from_s(model.trajectory_sampling.step_time)
+        future_step_time: TimeDuration = TimeDuration.from_s(
+            model.trajectory_sampling.step_time
+        )
         future_time_points: List[TimePoint] = [
             current_time + future_step_time * (i + 1)
             for i in range(model.trajectory_sampling.num_poses)
@@ -81,8 +93,12 @@ def create_pdm_feature(
             future_time_points
         )  # sample to model trajectory
 
-        planner_trajectory = ego_states_to_state_array(trajectory_ego_states)  # convert to array
-        planner_trajectory = planner_trajectory[..., StateIndex.STATE_SE2]  # drop values
+        planner_trajectory = ego_states_to_state_array(
+            trajectory_ego_states
+        )  # convert to array
+        planner_trajectory = planner_trajectory[
+            ..., StateIndex.STATE_SE2
+        ]  # drop values
         planner_trajectory = convert_absolute_to_relative_se2_array(
             current_ego_state.rear_axle, planner_trajectory
         )  # convert to relative coords

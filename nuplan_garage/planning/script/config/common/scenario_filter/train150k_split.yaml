@@ -17,5 +17,4 @@ speed_noise_tolerance: null         # Value at or below which a speed change bet
 
 expand_scenarios: true              # Whether to expand multi-sample scenarios to multiple single-sample scenarios
 remove_invalid_goals: true          # Whether to remove scenarios where the mission goal is invalid
-shuffle: true    
-    
+shuffle: true
