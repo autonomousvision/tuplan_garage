@@ -38,6 +38,9 @@ https://github.com/autonomousvision/nuplan_garage/assets/22528226/f91e9ce2-ae3d-
 
 <br/>
 
+## Contributing
+If you consider contributing to nuPlan Garage, make sure to check out our <a href="CONTRIBUTING.md">Contribution Guidelines</a>
+
 ## Method
 
 > We decompose the process of determining a safe and comfortable trajectory into two sub-tasks: (1) planning the short-term motion, and (2) accurately forecasting the long-term ego trajectory. While the former primarily impacts closed-loop performance, the latter is essential for the open-loop task. Our method employs a rule-based predictive planner to generate a trajectory proposal, and a learned ego-forecasting module that refines the trajectory with a particular emphasis on long-term forecasting.
