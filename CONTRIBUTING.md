@@ -16,7 +16,7 @@ Together we can build a powerful plugin that allows fast benchmarking with compa
 * don't use third-party code that does not allow modification, distribution, usage, etc.
 
 # <a name="contact">Whom to contact in case of questions?</a>
-You find this repository's maintainers and contact authors in the `Readme.md`.
+You find this repository's maintainers and contact authors in the `README.md`.
 
 If you have questions regarding a specific model published in the nuPlan Garage, please consider contacting the code author directly.
 
@@ -30,11 +30,11 @@ If you added a new model to the nuPlan Garage or have fixed a bug or developed t
 
 ## <a name="code-requirements">Code Requirements</a>
 To maintain high code quality, we need you to stick to the following coding conventions.
-* Take special care that your code works is reusable and easy to understand, modify, and test.
+* Take special care that your code is reusable and easy to understand, modify, and test.
 * nuPlan Garage is built to be a separate plugin for the nuPlan-framework. That means it should be compatible with the nuPlan-devkit without any modifications to the latter.
 * Please check if you can reuse existing code before adding. This applies especially to features/targets types and utils functions. If a utils function needs refactoring to make it reusable for additional models, please open an issue and consider creating a pull request.
 * To ensure seamless installation, remember to add additional required packages to the requirements file.
-* If your model / feature-builders etc., consist of multiple files, please keep them in a separate folder within the model / feature-builder directory.
+* If your model / feature-builders etc., consist of multiple files, please keep them in a separate folder within the `model/feature-builder` directory.
 * To make your code readable and easy to understand, we encourage you to add docstrings and comments wherever necessary.
 * Use the pre-commit hooks to ensure your code is formatted properly and checked for runaway errors such as unused imports or variables. Just install the hooks by running `pre-commit install` inside the repository. Afterward, your code will be checked and formatted properly before committing.
 
