@@ -17,7 +17,7 @@
 https://github.com/autonomousvision/nuplan_garage/assets/22528226/f91e9ce2-ae3d-4f1e-933e-d48ee5762497
 
 ## News
-* **`04 Jul, 2023`:**  We released the code and models for our ML planners. Additional baselines and a contribution guide are coming soon, please stay tuned!
+* **`04 Jul, 2023`:**  We released the code and models for our ML planners. Additional baselines are coming soon, please stay tuned!
 * **`26 Jun, 2023`:** We released our [supplementary material](https://danieldauner.github.io/assets/pdf/suppmat/suppmat_dauner2023parting.pdf) and the code for PDM-Closed.
 * **`14 Jun, 2023`:** We released our paper on [arXiv](https://arxiv.org/abs/2306.07962).
 * **`2 Jun, 2023`:** Our approach won the [2023 nuPlan Challenge](https://opendrivelab.com/AD23Challenge.html#nuplan_planning)!
@@ -69,7 +69,7 @@ Planning results on the proposed *Val14* benchmark. Please refer to the [paper](
 ## To Do
 - [ ] Additional baselines
 - [ ] Visualization scripts
-- [ ] Contribution guide
+- [x] Contribution guide
 - [x] ML planners code & checkpoints
 - [x] Supplementary material, video, slides
 - [x] Val14 benchmark
