@@ -69,14 +69,6 @@ class PGP(nn.Module):
         self.leaky_relu = nn.LeakyReLU()
         self.log_softmax = nn.LogSoftmax(dim=2)
 
-        # self.weights_h1 = nn.Linear(
-        #     2 * node_enc_size + target_agent_enc_size + 2, pi_h1_size
-        # )
-        # self.weights_h2 = nn.Linear(pi_h1_size, pi_h2_size)
-        # self.weights_op = nn.Linear(pi_h2_size, 1)
-        # self.softplus = nn.Softplus()
-        # self.tanh = nn.Tanh()
-
         # For sampling policy
         self.horizon = horizon
         if not keep_only_best_traversal:
@@ -150,8 +142,6 @@ class PGP(nn.Module):
             "pi": torch.log(pi + 1e-5),
             "sampled_traversals": sampled_traversals,
         }
-        # outputs = {"agg_encoding": agg_enc, "pi": torch.log(pi + 1e-5)}
-        # outputs = {"pi": torch.log(pi + 1e-5)}
         return outputs
 
     def aggregate(
@@ -385,11 +375,6 @@ class PGP(nn.Module):
         )
         pi_goal = torch.zeros_like(masks_goal, dtype=pi_goal_.dtype)
         pi_goal = pi_goal.masked_scatter_(masks_goal, pi_goal_)
-
-        # if self.use_route_mask:
-        #     if self.hard_masking:
-        # weights_mask = edge_on_route_mask[...,:-1] == 0
-        # weights = weights.masked_fill_(weights_mask, float("inf"))
 
         # In original implementation (https://github.com/nachiket92/PGP/blob/main/models/aggregators/pgp.py)
         #   op_masks = torch.log(torch.as_tensor(edge_type != 0).float())
