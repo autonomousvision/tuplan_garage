@@ -61,7 +61,6 @@ aggregator:
   hard_masking: true
   num_traversals: ${model.aggregator.num_samples}
   keep_only_best_traversal: false
-  # use_red_light_mask: false
 
 decoder:
   _target_: nuplan_garage.planning.training.modeling.models.pgp.pgp_decoder.LVM
