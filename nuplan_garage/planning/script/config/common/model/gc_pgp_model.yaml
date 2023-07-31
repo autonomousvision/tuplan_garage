@@ -13,6 +13,7 @@ return_traversal_coordinates: true
 filter_trajectories_by_endpoint: false
 smooth_output_trajectory: false
 interpolate_yaw: true
+average_output_trajectories: false
 
 # Parameters for past trajectory
 past_trajectory_sampling:

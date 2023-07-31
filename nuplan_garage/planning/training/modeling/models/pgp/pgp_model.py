@@ -73,6 +73,7 @@ class PGPModel(TorchModuleWrapper):
         filter_trajectories_by_endpoint: bool = False,
         smooth_output_trajectory: bool = False,
         interpolate_yaw: bool = False,
+        average_output_trajectories: bool = False,
     ):
         feature_builders = [
             PGPFeatureBuilder(
@@ -95,6 +96,7 @@ class PGPModel(TorchModuleWrapper):
         self.filter_trajectories_by_endpoint = filter_trajectories_by_endpoint
         self.smooth_output_trajectory = smooth_output_trajectory
         self.interpolate_yaw = interpolate_yaw
+        self.average_output_trajectories = average_output_trajectories
         if use_raster_feature_builder:
             feature_builders.append(
                 RasterFeatureBuilder(
@@ -220,26 +222,27 @@ class PGPModel(TorchModuleWrapper):
         agg_encoding = self.aggregator(encodings)
         outputs = self.decoder(agg_encoding)
 
-        # if self.filter_trajectories_by_endpoint:
-        #     probs_mask = self.get_final_waypoint_on_route_mask(
-        #         trajectories=outputs["traj"],
-        #         graph_map=features["pgp_features"].graph_map,
-        #         threshold=5.0 # same as in feature builder
-        #     )
-        #     probs = outputs["probs"] * probs_mask
-        # else:
-        #     probs = outputs["probs"]
+        if self.average_output_trajectories:
+            most_likely_trajectory = outputs["traj_none_clustered"].mean(dim=1)
+        else:
+            if self.filter_trajectories_by_endpoint:
+                probs_mask = self.get_final_waypoint_on_route_mask(
+                    trajectories=outputs["traj"],
+                    graph_map=features["pgp_features"].graph_map,
+                    threshold=5.0,  # same as in feature builder
+                )
+                probs = outputs["probs"] * probs_mask
+            else:
+                probs = outputs["probs"]
 
-        # most_likely_trajectory = (
-        #     outputs["traj"]
-        #     .take_along_dim(
-        #         indices=probs.argmax(dim=1, keepdim=True)[..., None, None],
-        #         dim=1,
-        #     )
-        #     .squeeze(dim=1)
-        # )
-
-        most_likely_trajectory = outputs["traj_none_clustered"].mean(dim=1)
+            most_likely_trajectory = (
+                outputs["traj"]
+                .take_along_dim(
+                    indices=probs.argmax(dim=1, keepdim=True)[..., None, None],
+                    dim=1,
+                )
+                .squeeze(dim=1)
+            )
 
         current_velocity = features["pgp_features"].ego_agent_features.ego_feats[
             :, 0, -1, 2
@@ -248,15 +251,6 @@ class PGPModel(TorchModuleWrapper):
             most_likely_trajectory = waypoints_to_trajectory(
                 most_likely_trajectory, current_velocity
             )
-
-            # batch_size = len(most_likely_trajectory)
-            # batch_size = len(most_likely_trajectory)
-            # trajectories_yaw = torch.zeros((batch_size, 10, 16, 3), dtype=most_likely_trajectory.dtype, device=most_likely_trajectory.device)
-            # for b in range(batch_size):
-            #     for m in range(10):
-            #         trajectories_yaw[:, m] = waypoints_to_trajectory(outputs["traj"][:,m], current_velocity)
-            # outputs["traj"] = trajectories_yaw
-
         else:
             batch_size, num_poses = most_likely_trajectory.shape[:2]
             dummy_heading = torch.zeros(
