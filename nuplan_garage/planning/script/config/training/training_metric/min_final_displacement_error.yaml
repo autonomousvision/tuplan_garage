@@ -1,0 +1,3 @@
+min_final_displacement_error:
+  _target_: nuplan_garage.planning.training.modeling.metrics.prediction_metrics.MinFinalDisplacementError
+  _convert_: 'all'

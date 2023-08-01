@@ -1,0 +1,74 @@
+_target_: nuplan_garage.planning.training.modeling.models.pgp.pgp_model.PGPModel
+_convert_: 'all'
+
+map_extent: [-20, 80, -50, 50]
+polyline_resolution: 1
+polyline_length: 20
+proximal_edges_dist_thresh: 4
+proximal_edges_yaw_thresh: 0.785 # approx Pi/4
+agent_node_att_dist_thresh: 10
+use_raster_feature_builder: false
+return_graph_map: false
+return_traversal_coordinates: true
+filter_trajectories_by_endpoint: false
+smooth_output_trajectory: false
+interpolate_yaw: true
+average_output_trajectories: false
+
+# Parameters for past trajectory
+past_trajectory_sampling:
+  _target_: nuplan.planning.simulation.trajectory.trajectory_sampling.TrajectorySampling
+  _convert_: 'all'
+  num_poses: 5      # target future poses
+  time_horizon: 1.0  # [s] time horizon of future poses
+
+# Parameters for predicted trajectory
+future_trajectory_sampling:
+  _target_: nuplan.planning.simulation.trajectory.trajectory_sampling.TrajectorySampling
+  _convert_: 'all'
+  num_poses: 16      # target future poses
+  time_horizon: 8.0  # [s] time horizon of future poses
+
+# encoder model
+encoder:
+  _target_: nuplan_garage.planning.training.modeling.models.pgp.pgp_encoder.PGPEncoder
+  target_agent_feat_size: 5 # Size of ego agent features (fixed)
+  target_agent_emb_size: 16 # Size of ego agent embedding (any)
+  target_agent_enc_size: 32 # Size of hidden state of target agent GRU encoder (any!)
+  node_feat_size: 7         # Size of lane node features (fixed)
+  node_emb_size: 16         # Size of lane agent embedding (any)
+  node_enc_size: 32         # Size of hidden state of node GRU encoder (any)
+  nbr_feat_size: 5          # Size of non-ego agent features (vehicles/pedestrians)
+  nbr_emb_size: 16          # Size of non-ego agent embedding (vehicles/pedestrians)
+  nbr_enc_size: 32          # Size of hidden state of agent GRU encoder
+  num_gat_layers: 2         # number of graph attention layers
+  use_route_feature: false
+  use_red_light_feature: true
+
+# aggregator model
+aggregator:
+  _target_: nuplan_garage.planning.training.modeling.models.pgp.pgp_aggregator.PGP
+  pre_train: false
+  target_agent_enc_size: ${model.encoder.target_agent_enc_size}
+  node_enc_size: ${model.encoder.node_enc_size}
+  pi_h1_size: 32  # Size of hidden state 1 of policy header (any)
+  pi_h2_size: 32  # Size of hidden state 2 of policy header (any)
+  horizon: ${model.future_trajectory_sampling.num_poses}
+  num_samples: ${model.decoder.num_samples}
+  emb_size: 128   # Size of MHA encoding (any)
+  num_heads: 32   # Size of MHA heads (any)
+  use_route_mask: true
+  hard_masking: true
+  num_traversals: ${model.aggregator.num_samples}
+  keep_only_best_traversal: false
+
+decoder:
+  _target_: nuplan_garage.planning.training.modeling.models.pgp.pgp_decoder.LVM
+  num_samples: 1000     # number of trajectory samples (any)
+  op_len: ${model.future_trajectory_sampling.num_poses}
+  hidden_size: 128      # number of trajectory samples (any)
+  encoding_size: 160    # concatenated encoding of target_agent_enc_size (encoder) + emb_size (aggregator)
+  agg_type: 'sample_specific'
+  lv_dim: 5             # dimension of latent variable (any)
+  num_clusters: 10      # number of clusters (any)
+  use_ray: false

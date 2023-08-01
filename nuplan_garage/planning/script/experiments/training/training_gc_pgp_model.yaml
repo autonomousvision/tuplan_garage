@@ -1,0 +1,23 @@
+# @package _global_
+experiment_name: training_gc_pgp_model
+py_func: train
+objective_aggregate_mode: mean
+
+defaults:
+  - override /data_augmentation:
+      - pgp_kinematic_agent_augmentation
+      - pgp_agent_dropout_augmentation
+      - pgp_ego_history_dropout_augmentation
+  - override /objective:
+      - pgp_minADE_objective
+      - pgp_traversal_objective
+  - override /splitter: nuplan
+  - override /model: gc_pgp_model
+  - override /scenario_filter: training_scenarios
+  - override /training_metric:
+      - avg_displacement_error
+      - avg_heading_error
+      - final_displacement_error
+      - final_heading_error
+      - min_final_displacement_error
+      - min_avg_displacement_error

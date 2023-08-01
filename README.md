@@ -56,7 +56,7 @@ Planning results on the proposed *Val14* benchmark. Please refer to the [paper](
 | **Method**        | **Representation**     | **CLS-R ↑** | **CLS-NR ↑** | **OLS ↑**  | **Time (ms) ↓** |
 |-------------------|--------------|------------|--------------|------------|------------|
 | [Urban Driver](https://arxiv.org/abs/2109.13333)*  | Polygon      | 44         | 45           | 76         | 64         |
-| [GC-PGP](https://arxiv.org/abs/2302.07753v1)        | Graph        | 54         | 57           | 82         | 100        |
+| [GC-PGP](https://arxiv.org/abs/2302.07753v1)        | Graph        | 56         | 55           | 83         | 100        |
 | [PlanCNN](https://arxiv.org/abs/2210.14222)       | Raster       | 72         | 73           | 64         | 43         |
 | [IDM](https://arxiv.org/abs/cond-mat/0002177)           | Centerline   | 77         | 76           | 38         | 27         |
 | PDM-Open          | Centerline   | 54         | 50           | **86**     | **7**      |
