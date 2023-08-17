@@ -11,4 +11,4 @@ planner.ml_planner.model_config='\${model}' \
 planner.ml_planner.checkpoint_path=$CHECKPOINT_PATH \
 model=gc_pgp_model \
 model.aggregator.pre_train=false \
-hydra.searchpath="[pkg://nuplan_garage.planning.script.config.common, pkg://nuplan_garage.planning.script.config.simulation, pkg://nuplan.planning.script.config.common, pkg://nuplan.planning.script.experiments]"
+hydra.searchpath="[pkg://tuplan_garage.planning.script.config.common, pkg://tuplan_garage.planning.script.config.simulation, pkg://nuplan.planning.script.config.common, pkg://nuplan.planning.script.experiments]"

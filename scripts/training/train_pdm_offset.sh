@@ -23,4 +23,4 @@ optimizer.lr=$TRAIN_LR \
 lr_scheduler=multistep_lr \
 lr_scheduler.milestones=$TRAIN_LR_MILESTONES \
 lr_scheduler.gamma=$TRAIN_LR_DECAY \
-hydra.searchpath="[pkg://nuplan_garage.planning.script.config.common, pkg://nuplan_garage.planning.script.config.training, pkg://nuplan_garage.planning.script.experiments, pkg://nuplan.planning.script.config.common, pkg://nuplan.planning.script.experiments]"
+hydra.searchpath="[pkg://tuplan_garage.planning.script.config.common, pkg://tuplan_garage.planning.script.config.training, pkg://tuplan_garage.planning.script.experiments, pkg://nuplan.planning.script.config.common, pkg://nuplan.planning.script.experiments]"

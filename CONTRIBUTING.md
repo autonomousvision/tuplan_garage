@@ -8,7 +8,7 @@
     * [Pull request Conventions](#pr)
 
 # <a name="thank-you">Thank You!</a>
-Before we get to the fine print and nitty gritty of contributing, let us start by saying *Thank you!* for considering contributing to the nuPlan Garage.
+Before we get to the fine print and nitty gritty of contributing, let us start by saying *Thank you!* for considering contributing to the tuPlan Garage.
 Together we can build a powerful plugin that allows fast benchmarking with comparable results across research.
 
 # <a name="license">License</a>
@@ -18,7 +18,7 @@ Together we can build a powerful plugin that allows fast benchmarking with compa
 # <a name="contact">Whom to contact in case of questions?</a>
 You find this repository's maintainers and contact authors in the `README.md`.
 
-If you have questions regarding a specific model published in the nuPlan Garage, please consider contacting the code author directly.
+If you have questions regarding a specific model published in the tuPlan Garage, please consider contacting the code author directly.
 
 If you have general questions regarding this repository or run into problems with the code, feel free to open an issue.
 
@@ -26,12 +26,12 @@ If you have general questions regarding this repository or run into problems wit
 Found a bug? Great! Well, not really, but at least we can fix it now. The best way to report a bug is to open an issue for this repository. Thank you for helping to improve our code!
 
 # <a name="how-to-contribute">How to contribute</a>
-If you added a new model to the nuPlan Garage or have fixed a bug or developed that new feature you would like to make available to your fellow users, we'd like to encourage you to contribute that to our codebase. In the sections below, you will find some requirements and guidelines for your contributions.
+If you added a new model to the tuPlan Garage or have fixed a bug or developed that new feature you would like to make available to your fellow users, we'd like to encourage you to contribute that to our codebase. In the sections below, you will find some requirements and guidelines for your contributions.
 
 ## <a name="code-requirements">Code Requirements</a>
 To maintain high code quality, we need you to stick to the following coding conventions.
 * Take special care that your code is reusable and easy to understand, modify, and test.
-* nuPlan Garage is built to be a separate plugin for the nuPlan-framework. That means it should be compatible with the nuPlan-devkit without any modifications to the latter.
+* tuPlan Garage is built to be a separate plugin for the nuPlan-framework. That means it should be compatible with the nuPlan-devkit without any modifications to the latter.
 * Please check if you can reuse existing code before adding. This applies especially to features/targets types and utils functions. If a utils function needs refactoring to make it reusable for additional models, please open an issue and consider creating a pull request.
 * To ensure seamless installation, remember to add additional required packages to the requirements file.
 * If your model / feature-builders etc., consist of multiple files, please keep them in a separate folder within the `model/feature-builder` directory.

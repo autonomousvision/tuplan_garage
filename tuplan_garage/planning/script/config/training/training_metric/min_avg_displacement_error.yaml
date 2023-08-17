@@ -1,0 +1,3 @@
+min_avg_displacement_error:
+  _target_: tuplan_garage.planning.training.modeling.metrics.prediction_metrics.MinAverageDisplacementError
+  _convert_: 'all'

@@ -41,7 +41,7 @@ model.encoder.use_red_light_feature=$TRAFFIC_LIGHT \
 model.aggregator.use_route_mask=$ROUTE_MASK \
 model.aggregator.hard_masking=$HARD_MASK \
 model.aggregator.pre_train=true \
-hydra.searchpath="[pkg://nuplan_garage.planning.script.config.common, pkg://nuplan_garage.planning.script.config.training, pkg://nuplan_garage.planning.script.experiments, pkg://nuplan.planning.script.config.common, pkg://nuplan.planning.script.experiments]"
+hydra.searchpath="[pkg://tuplan_garage.planning.script.config.common, pkg://tuplan_garage.planning.script.config.training, pkg://tuplan_garage.planning.script.experiments, pkg://nuplan.planning.script.config.common, pkg://nuplan.planning.script.experiments]"
 
 echo "Starting Training with aggregator traversals as input for decoder"
 python $NUPLAN_DEVKIT_ROOT/nuplan/planning/script/run_training.py \
@@ -64,4 +64,4 @@ model.encoder.use_red_light_feature=$TRAFFIC_LIGHT \
 model.aggregator.use_route_mask=$ROUTE_MASK \
 model.aggregator.hard_masking=$HARD_MASK \
 model.aggregator.pre_train=false \
-hydra.searchpath="[pkg://nuplan_garage.planning.script.config.common, pkg://nuplan_garage.planning.script.config.training, pkg://nuplan_garage.planning.script.experiments, pkg://nuplan.planning.script.config.common, pkg://nuplan.planning.script.experiments]"
+hydra.searchpath="[pkg://tuplan_garage.planning.script.config.common, pkg://tuplan_garage.planning.script.config.training, pkg://tuplan_garage.planning.script.experiments, pkg://nuplan.planning.script.config.common, pkg://nuplan.planning.script.experiments]"
