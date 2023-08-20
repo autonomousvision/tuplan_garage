@@ -10,7 +10,6 @@ TRAIN_LR_DECAY=0.5
 
 JOB_NAME=training_gc_pgp_model
 CACHE_PATH=/path/to/cache/
-CACHE_PATH=""
 USE_CACHE_WITHOUT_DATASET=False
 
 ROUTE_FEATURE=FALSE
