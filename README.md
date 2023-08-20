@@ -17,7 +17,8 @@
 https://github.com/autonomousvision/tuplan_garage/assets/22528226/f91e9ce2-ae3d-4f1e-933e-d48ee5762497
 
 ## News
-* **`04 Jul, 2023`:**  We released the code and models for our ML planners. Additional baselines are coming soon, please stay tuned!
+* **`20 Aug, 2023`:**  We renamed our repository to tuPlan Garage due to trademark conflicts.
+* **`01 Aug, 2023`:**  We released the code for [GC-PGP](https://arxiv.org/abs/2302.07753)!
 * **`26 Jun, 2023`:** We released our [supplementary material](https://danieldauner.github.io/assets/pdf/suppmat/suppmat_dauner2023parting.pdf) and the code for PDM-Closed.
 * **`14 Jun, 2023`:** We released our paper on [arXiv](https://arxiv.org/abs/2306.07962).
 * **`2 Jun, 2023`:** Our approach won the [2023 nuPlan Challenge](https://opendrivelab.com/AD23Challenge.html#nuplan_planning)!
@@ -138,5 +139,5 @@ If you find tuPlan Garage useful, please consider giving us a star &#127775; and
 ```
 
 
-## Acknowledgements
-tuPlan Garage includes code from the following projects: [nuplan-devkit](https://github.com/motional/nuplan-devkit). Thanks to the community for these great open-source contributions!
+## Disclaimer
+tuPlan Garage includes code from Motional's [nuplan-devkit](https://github.com/motional/nuplan-devkit). We are not affiliated with Motional, and the repository is not published, maintained or otherwise related to Motional.
