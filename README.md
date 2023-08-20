@@ -17,7 +17,7 @@
 https://github.com/autonomousvision/tuplan_garage/assets/22528226/f91e9ce2-ae3d-4f1e-933e-d48ee5762497
 
 ## News
-* **`20 Aug, 2023`:**  We renamed our repository to tuPlan Garage due to trademark conflicts.
+* **`20 Aug, 2023`:**  We renamed our repository to "tuPlan Garage" due to trademark conflicts.
 * **`01 Aug, 2023`:**  We released the code for [GC-PGP](https://arxiv.org/abs/2302.07753)!
 * **`26 Jun, 2023`:** We released our [supplementary material](https://danieldauner.github.io/assets/pdf/suppmat/suppmat_dauner2023parting.pdf) and the code for PDM-Closed.
 * **`14 Jun, 2023`:** We released our paper on [arXiv](https://arxiv.org/abs/2306.07962).
