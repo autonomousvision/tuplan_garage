@@ -1,0 +1,17 @@
+# @package _global_
+experiment_name: training_pdm_open_model
+py_func: train
+objective_aggregate_mode: mean
+
+defaults:
+  - override /data_augmentation:
+  - override /objective:
+      - l1_objective
+  - override /splitter: nuplan
+  - override /model: pdm_open_model
+  - override /scenario_filter: train150k_split
+  - override /training_metric:
+      - avg_displacement_error
+      - avg_heading_error
+      - final_displacement_error
+      - final_heading_error

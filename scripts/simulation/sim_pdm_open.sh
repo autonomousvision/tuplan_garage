@@ -9,4 +9,4 @@ planner=pdm_open_planner \
 planner.pdm_open_planner.checkpoint_path=$CHECKPOINT \
 scenario_filter=$SPLIT \
 scenario_builder=nuplan \
-hydra.searchpath="[pkg://nuplan_garage.planning.script.config.common, pkg://nuplan_garage.planning.script.config.simulation, pkg://nuplan.planning.script.config.common, pkg://nuplan.planning.script.experiments]"
+hydra.searchpath="[pkg://tuplan_garage.planning.script.config.common, pkg://tuplan_garage.planning.script.config.simulation, pkg://nuplan.planning.script.config.common, pkg://nuplan.planning.script.experiments]"

@@ -1,5 +1,5 @@
 <p align="center">
-    <img alt="nuplangarage" src="assets/nuplan_garage_white.png" width="500">
+    <img alt="tuPlangarage" src="assets/tuplan_garage.png" width="500">
     <h1 align="center">A Framework for Vehicle Motion Planning Research</h1>
     <h3 align="center"><a href="https://arxiv.org/abs/2306.07962">Paper</a> | <a href="https://danieldauner.github.io/assets/pdf/suppmat/suppmat_dauner2023parting.pdf">Supplementary</a> | <a href="https://youtu.be/ZwhXilQKULY?t=1975">Talk</a> | <a href="https://danieldauner.github.io/assets/pdf/slides/slides_dauner2023parting.pdf">Slides</a> | <a href="https://youtu.be/oIOYQAR5P4w">Video</a> </h3>
 </p>
@@ -14,10 +14,11 @@
 
 <br/>
 
-https://github.com/autonomousvision/nuplan_garage/assets/22528226/f91e9ce2-ae3d-4f1e-933e-d48ee5762497
+https://github.com/autonomousvision/tuplan_garage/assets/22528226/f91e9ce2-ae3d-4f1e-933e-d48ee5762497
 
 ## News
-* **`04 Jul, 2023`:**  We released the code and models for our ML planners. Additional baselines are coming soon, please stay tuned!
+* **`20 Aug, 2023`:**  We renamed our repository to "tuPlan Garage" due to trademark conflicts.
+* **`01 Aug, 2023`:**  We released the code for [GC-PGP](https://arxiv.org/abs/2302.07753)!
 * **`26 Jun, 2023`:** We released our [supplementary material](https://danieldauner.github.io/assets/pdf/suppmat/suppmat_dauner2023parting.pdf) and the code for PDM-Closed.
 * **`14 Jun, 2023`:** We released our paper on [arXiv](https://arxiv.org/abs/2306.07962).
 * **`2 Jun, 2023`:** Our approach won the [2023 nuPlan Challenge](https://opendrivelab.com/AD23Challenge.html#nuplan_planning)!
@@ -39,7 +40,7 @@ https://github.com/autonomousvision/nuplan_garage/assets/22528226/f91e9ce2-ae3d-
 <br/>
 
 ## Contributing
-If you consider contributing to nuPlan Garage, make sure to check out our <a href="CONTRIBUTING.md">Contribution Guidelines</a>
+If you consider contributing to tuPlan Garage, make sure to check out our <a href="CONTRIBUTING.md">Contribution Guidelines</a>
 
 ## Method
 
@@ -81,17 +82,17 @@ Planning results on the proposed *Val14* benchmark. Please refer to the [paper](
 ## Getting started
 
 ### 1. Installation
-To install nuPlan garage, please follow these steps:
+To install tuPlan Garage, please follow these steps:
 - setup the nuPlan dataset ([described here](https://nuplan-devkit.readthedocs.io/en/latest/dataset_setup.html)) and install the nuPlan devkit ([see here](https://nuplan-devkit.readthedocs.io/en/latest/installation.html))
-- download nuPlan Garage and move inside the folder
+- download tuPlan Garage and move inside the folder
 ```
-git clone https://github.com/autonomousvision/nuplan_garage.git && cd nuplan_garage
+git clone https://github.com/autonomousvision/tuplan_garage.git && cd tuplan_garage
 ```
 - make sure the environment you created when installing the nuplan-devkit is activated
 ```
 conda activate nuplan
 ```
-- install the local nuplan_garage as a pip package
+- install the local tuplan_garage as a pip package
 ```
 pip install -e .
 ```
@@ -101,22 +102,22 @@ NUPLAN_DEVKIT_ROOT="$HOME/nuplan-devkit/"
 ```
 
 ### 2. Training
-When running a training, you have to add the `hydra.searchpath` for the `nuplan_garage` correctly.
+When running a training, you have to add the `hydra.searchpath` for the `tuplan_garage` correctly.
 Note: since hydra does not yet support appending to lists ([see here](https://github.com/facebookresearch/hydra/issues/1547)), you have to add the original searchpaths in the override.
 Training scripts can be run with the scripts found in `/scripts/training/`.
 Before training from an already existing cache, please check [this](https://github.com/motional/nuplan-devkit/issues/128) issue.
 You can find our trained models [here](https://drive.google.com/drive/folders/1LLdunqyvQQuBuknzmf7KMIJiA2grLYB2?usp=sharing).
 
 ### 3. Evaluation
-Same as for the training, when running an evaluation, you have to add the `hydra.searchpath` for the `nuplan_garage` correctly.
-The example below runs an evaluation of the `pdm_closed_planner` on the `val14_split`, both of which are part of the nuplan_garage
+Same as for the training, when running an evaluation, you have to add the `hydra.searchpath` for the `tuplan_garage` correctly.
+The example below runs an evaluation of the `pdm_closed_planner` on the `val14_split`, both of which are part of the tuplan_garage
 ```
 python $NUPLAN_DEVKIT_ROOT/nuplan/planning/script/run_simulation.py \
 +simulation=closed_loop_nonreactive_agents \
 planner=pdm_closed_planner \
 scenario_filter=val14_split \
 scenario_builder=nuplan \
-hydra.searchpath="[pkg://nuplan_garage.planning.script.config.common, pkg://nuplan_garage.planning.script.config.simulation, pkg://nuplan.planning.script.config.common, pkg://nuplan.planning.script.experiments]"
+hydra.searchpath="[pkg://tuplan_garage.planning.script.config.common, pkg://tuplan_garage.planning.script.config.simulation, pkg://nuplan.planning.script.config.common, pkg://nuplan.planning.script.experiments]"
 ```
 You can find exemplary shells scripts in `/scripts/simulation/`
 
@@ -125,7 +126,7 @@ If you have any questions or suggestions, please feel free to open an issue or c
 
 
 ## Citation
-If you find nuPlan garage useful, please consider giving us a star &#127775; and citing our paper with the following BibTeX entry.
+If you find tuPlan Garage useful, please consider giving us a star &#127775; and citing our paper with the following BibTeX entry.
 
 ```BibTeX
 @article{Dauner2023ARXIV,
@@ -138,5 +139,5 @@ If you find nuPlan garage useful, please consider giving us a star &#127775; and
 ```
 
 
-## Acknowledgements
-nuPlan garage includes code from the following projects: [nuplan-devkit](https://github.com/motional/nuplan-devkit). Thanks to the community for these great open-source contributions!
+## Disclaimer
+tuPlan Garage includes code from Motional's [nuplan-devkit](https://github.com/motional/nuplan-devkit). We are not affiliated with Motional, and the repository is not published, maintained or otherwise related to Motional.

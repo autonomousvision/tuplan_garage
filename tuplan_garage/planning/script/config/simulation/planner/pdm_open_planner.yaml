@@ -1,0 +1,28 @@
+pdm_open_planner:
+  _target_: tuplan_garage.planning.simulation.planner.pdm_planner.pdm_open_planner.PDMOpenPlanner
+  _convert_: 'all'
+
+  model:
+    _target_: tuplan_garage.planning.training.modeling.models.pdm_open_model.PDMOpenModel
+    _convert_: 'all'
+
+    trajectory_sampling:
+      _target_: nuplan.planning.simulation.trajectory.trajectory_sampling.TrajectorySampling
+      _convert_: 'all'
+      num_poses: 16      # target future poses
+      interval_length: 0.5
+
+    history_sampling:
+      _target_: nuplan.planning.simulation.trajectory.trajectory_sampling.TrajectorySampling
+      _convert_: 'all'
+      num_poses: 10      # target future poses
+      interval_length: 0.2
+
+
+    planner: null # ignored since feature builder & PDM-Closed trajectory aren't needed
+    centerline_samples: 120 # number of samples poses on centerline
+    centerline_interval: 1.0  #  interval of sampled poses on centerline [m]
+    hidden_dim: 512
+
+  map_radius: 50
+  checkpoint_path: ???

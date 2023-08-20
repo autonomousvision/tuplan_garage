@@ -1,0 +1,4 @@
+pgp_traversal_objective:
+  _target_: tuplan_garage.planning.training.modeling.objectives.pgp_traversal_objective.PGPTraversalObjective
+  _convert_: 'all'
+  weight: 0.5

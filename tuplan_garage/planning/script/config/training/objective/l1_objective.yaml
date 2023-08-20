@@ -1,0 +1,4 @@
+l1_objective:
+  _target_: tuplan_garage.planning.training.modeling.objectives.l1_objective.L1Objective
+  _convert_: 'all'
+  weight: 1.0  # weight contribution to the overall loss

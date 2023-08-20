@@ -1,0 +1,5 @@
+minADE_objective:
+  _target_: tuplan_garage.planning.training.modeling.objectives.pgp_minADE_objective.minADEObjective
+  _convert_: 'all'
+  weight: 1.0
+  k: ${model.decoder.num_clusters}

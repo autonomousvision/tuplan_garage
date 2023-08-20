@@ -1,0 +1,5 @@
+PGPEgoHistoryDropoutAugmentor:
+  _target_: tuplan_garage.planning.training.data_augmentation.pgp.pgp_ego_history_dropout_augmentation.PGPEgoHistoryDropoutAugmentor
+  _convert_: 'all'
+
+  augment_prob: 0.2  # probability of applying data augmentation for training
