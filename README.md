@@ -17,6 +17,7 @@
 https://github.com/autonomousvision/tuplan_garage/assets/22528226/f91e9ce2-ae3d-4f1e-933e-d48ee5762497
 
 ## News
+* **`30 Aug, 2023`:**  Our paper was accepted at [CoRL 2023](https://www.corl2023.org/)!
 * **`20 Aug, 2023`:**  We renamed our repository to "tuPlan Garage" due to trademark conflicts.
 * **`01 Aug, 2023`:**  We released the code for [GC-PGP](https://arxiv.org/abs/2302.07753)!
 * **`26 Jun, 2023`:** We released our [supplementary material](https://danieldauner.github.io/assets/pdf/suppmat/suppmat_dauner2023parting.pdf) and the code for PDM-Closed.
@@ -129,11 +130,10 @@ If you have any questions or suggestions, please feel free to open an issue or c
 If you find tuPlan Garage useful, please consider giving us a star &#127775; and citing our paper with the following BibTeX entry.
 
 ```BibTeX
-@article{Dauner2023ARXIV,
+@InProceedings{Dauner2023CORL,
   title={Parting with Misconceptions about Learning-based Vehicle Motion Planning},
   author={Dauner, Daniel and Hallgarten, Marcel and Geiger, Andreas and Chitta, Kashyap},
-  journal={arXiv},
-  volume={2306.07962},
+  booktitle={Conference on Robot Learning (CoRL)},
   year={2023}
 }
 ```
