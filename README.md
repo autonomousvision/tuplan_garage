@@ -1,7 +1,7 @@
 <p align="center">
     <img alt="tuPlangarage" src="assets/tuplan_garage.png" width="500">
     <h1 align="center">A Framework for Vehicle Motion Planning Research</h1>
-    <h3 align="center"><a href="https://arxiv.org/abs/2306.07962">Paper</a> | <a href="https://danieldauner.github.io/assets/pdf/suppmat/suppmat_dauner2023parting.pdf">Supplementary</a> | <a href="https://youtu.be/ZwhXilQKULY?t=1975">Talk</a> | <a href="https://danieldauner.github.io/assets/pdf/slides/slides_dauner2023parting.pdf">Slides</a> | <a href="https://youtu.be/oIOYQAR5P4w">Video</a> </h3>
+    <h3 align="center"><a href="https://arxiv.org/abs/2306.07962">Paper</a> | <a href="https://danieldauner.github.io/assets/pdf/Dauner2023CORL_supplementary.pdf">Supplementary</a> | <a href="https://youtu.be/cKIofruqbIk">Spotlight</a> | <a href="https://youtu.be/ZwhXilQKULY?t=1975">Talk</a> | <a href="https://danieldauner.github.io/assets/pdf/slides/Dauner2023CORL_slides.pdf">Slides</a> | <a href="https://youtu.be/iI5iy5QLv6g">Video</a> </h3>
 </p>
 
 <br/>
@@ -10,7 +10,7 @@
 > [Daniel Dauner](https://danieldauner.github.io/)<sup>1,2</sup>, [Marcel Hallgarten](https://mh0797.github.io/)<sup>1,3</sup>, [Andreas Geiger](https://www.cvlibs.net/)<sup>1,2</sup>, and [Kashyap Chitta](https://kashyap7x.github.io/)<sup>1,2</sup>  <br>
 > <sup>1</sup> University of Tübingen, <sup>2</sup> Tübingen AI Center, <sup>3</sup> Robert Bosch GmbH
 >
-> This repo is intended to serve as a starting point for vehicle motion planning research on [nuPlan](https://github.com/motional/nuplan-devkit). We provide a publicly accesible configuration for validation, comprehensive set of baselines, and pre-trained planning models.
+> This repo is intended to serve as a starting point for vehicle motion planning research on [nuPlan](https://github.com/motional/nuplan-devkit). We provide a publicly accessible configuration for validation, comprehensive set of baselines, and pre-trained planning models.
 
 <br/>
 
@@ -57,12 +57,12 @@ Planning results on the proposed *Val14* benchmark. Please refer to the [paper](
 
 | **Method**        | **Representation**     | **CLS-R ↑** | **CLS-NR ↑** | **OLS ↑**  | **Time (ms) ↓** |
 |-------------------|--------------|------------|--------------|------------|------------|
-| [Urban Driver](https://arxiv.org/abs/2109.13333)*  | Polygon      | 44         | 45           | 76         | 64         |
-| [GC-PGP](https://arxiv.org/abs/2302.07753v1)        | Graph        | 56         | 55           | 83         | 100        |
+| [Urban Driver](https://arxiv.org/abs/2109.13333)*  | Polygon      | 50         | 53           | 82         | 64         |
+| [GC-PGP](https://arxiv.org/abs/2302.07753v1)        | Graph        | 55         | 59           | 83         | 100        |
 | [PlanCNN](https://arxiv.org/abs/2210.14222)       | Raster       | 72         | 73           | 64         | 43         |
 | [IDM](https://arxiv.org/abs/cond-mat/0002177)           | Centerline   | 77         | 76           | 38         | 27         |
 | PDM-Open          | Centerline   | 54         | 50           | **86**     | **7**      |
-| PDM-Closed        | Centerline   | **92**     | **93**       | 44         | 91         |
+| PDM-Closed        | Centerline   | **92**     | **93**       | 42         | 91         |
 | PDM-Hybrid        | Centerline   | **92**     | **93**       | 84         | 96         |
 | *Log Replay*      | *GT*         | *80*       | *94*         | *100*      | -          |
 
