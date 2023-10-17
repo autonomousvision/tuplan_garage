@@ -20,7 +20,7 @@ https://github.com/autonomousvision/tuplan_garage/assets/22528226/f91e9ce2-ae3d-
 * **`30 Aug, 2023`:**  Our paper was accepted at [CoRL 2023](https://www.corl2023.org/)!
 * **`20 Aug, 2023`:**  We renamed our repository to "tuPlan Garage" due to trademark conflicts.
 * **`01 Aug, 2023`:**  We released the code for [GC-PGP](https://arxiv.org/abs/2302.07753)!
-* **`26 Jun, 2023`:** We released our [supplementary material](https://danieldauner.github.io/assets/pdf/suppmat/suppmat_dauner2023parting.pdf) and the code for PDM-Closed.
+* **`26 Jun, 2023`:** We released our [supplementary material](https://danieldauner.github.io/assets/pdf/Dauner2023CORL_supplementary.pdf) and the code for PDM-Closed.
 * **`14 Jun, 2023`:** We released our paper on [arXiv](https://arxiv.org/abs/2306.07962).
 * **`2 Jun, 2023`:** Our approach won the [2023 nuPlan Challenge](https://opendrivelab.com/AD23Challenge.html#nuplan_planning)!
 
