@@ -1,7 +1,7 @@
 <p align="center">
     <img alt="tuPlangarage" src="assets/tuplan_garage.png" width="500">
     <h1 align="center">A Framework for Vehicle Motion Planning Research</h1>
-    <h3 align="center"><a href="https://arxiv.org/abs/2306.07962">Paper</a> | <a href="https://danieldauner.github.io/assets/pdf/Dauner2023CORL_supplementary.pdf">Supplementary</a> | <a href="https://youtu.be/cKIofruqbIk">Spotlight</a> | <a href="https://youtu.be/ZwhXilQKULY?t=1975">Talk</a> | <a href="https://danieldauner.github.io/assets/pdf/slides/Dauner2023CORL_slides.pdf">Slides</a> | <a href="https://danieldauner.github.io/assets/pdf/Dauner2023CORL_poster.pdf">Poster</a> | <a href="https://youtu.be/iI5iy5QLv6g">Video</a> </h3>
+    <h3 align="center"><a href="https://arxiv.org/abs/2306.07962">Paper</a> | <a href="https://danieldauner.github.io/assets/pdf/Dauner2023CORL_supplementary.pdf">Supplementary</a> | <a href="https://danieldauner.github.io/assets/pdf/Dauner2023CORL_poster.pdf">Poster</a> | <a href="#-videos">Videos</a> </h3>
 </p>
 
 <br/>
@@ -37,6 +37,20 @@ https://github.com/autonomousvision/tuplan_garage/assets/22528226/f91e9ce2-ae3d-
 - More surprisingly, for the open-loop sub-task, we observe that the best results are achieved when using only this centerline as scene context (i.e., ignoring all information regarding the map and other agents).
 
 - Combining these insights, we propose an extremely simple and efficient planner which outperforms an extensive set of competitors, winning the nuPlan planning challenge 2023.
+
+<br/>
+
+## Videos
+
+Here are four videos for talks and visualizations of our method:
+
+* [**&#128250; Spotlight**](https://youtu.be/cKIofruqbIk) - Presentation of our CoRL poster, 1min 
+
+* [**&#128250; Supplementary Video**](https://youtu.be/iI5iy5QLv6g) - Comparison of simulation modes and methods in nuPlan, 3min
+
+* [**&#128250; Talk CVPR'23 E2EAD**](https://youtu.be/ZwhXilQKULY?t=1975) - Competition presentation, 5min, [Slides](https://danieldauner.github.io/assets/pdf/slides/Dauner2023CORL_slides.pdf)
+
+* [**&#128250; Talk CVPR'23 WAD**](https://youtu.be/x_42Fji1Z2M) - Keynote about Misconceptions in Autonomous Driving, [Slides](https://www.cvlibs.net/shared/common_misconceptions.pdf)
 
 <br/>
 
