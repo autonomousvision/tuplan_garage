@@ -1,7 +1,7 @@
 <p align="center">
     <img alt="tuPlangarage" src="assets/tuplan_garage.png" width="500">
     <h1 align="center">A Framework for Vehicle Motion Planning Research</h1>
-    <h3 align="center"><a href="https://arxiv.org/abs/2306.07962">Paper</a> | <a href="https://danieldauner.github.io/assets/pdf/Dauner2023CORL_supplementary.pdf">Supplementary</a> | <a href="https://danieldauner.github.io/assets/pdf/Dauner2023CORL_poster.pdf">Poster</a> | <a href="#-videos">Videos</a> </h3>
+    <h3 align="center"><a href="https://arxiv.org/abs/2306.07962">Paper</a> | <a href="https://danieldauner.github.io/assets/pdf/Dauner2023CORL_supplementary.pdf">Supplementary</a> | <a href="https://danieldauner.github.io/assets/pdf/Dauner2023CORL_poster.pdf">Poster</a> | <a href="#videos">Videos</a> </h3>
 </p>
 
 <br/>
