@@ -44,13 +44,13 @@ https://github.com/autonomousvision/tuplan_garage/assets/22528226/f91e9ce2-ae3d-
 
 Here are four videos for talks and visualizations of our method:
 
-* [**&#128250; Spotlight**](https://youtu.be/cKIofruqbIk) - Presentation of our CoRL poster, 1min 
+* [**&#128250; Spotlight**](https://youtu.be/cKIofruqbIk) (1min) - Presentation of our CoRL poster.
 
-* [**&#128250; Supplementary Video**](https://youtu.be/iI5iy5QLv6g) - Comparison of simulation modes and methods in nuPlan, 3min
+* [**&#128250; Supplementary Video**](https://youtu.be/iI5iy5QLv6g) (3min) - Comparison of simulation modes and methods in nuPlan.
 
-* [**&#128250; Talk CVPR'23 E2EAD**](https://youtu.be/ZwhXilQKULY?t=1975) - Competition presentation, 5min, [Slides](https://danieldauner.github.io/assets/pdf/slides/Dauner2023CORL_slides.pdf)
+* [**&#128250; Talk CVPR'23 E2EAD**](https://youtu.be/ZwhXilQKULY?t=1975) (5min) - Competition presentation. ([Slides](https://danieldauner.github.io/assets/pdf/slides/Dauner2023CORL_slides.pdf))
 
-* [**&#128250; Talk CVPR'23 WAD**](https://youtu.be/x_42Fji1Z2M) - Keynote about Misconceptions in Autonomous Driving, [Slides](https://www.cvlibs.net/shared/common_misconceptions.pdf)
+* [**&#128250; Talk CVPR'23 WAD**](https://youtu.be/x_42Fji1Z2M) (18min) - Keynote about Misconceptions in Autonomous Driving. ([Slides](https://www.cvlibs.net/shared/common_misconceptions.pdf))
 
 <br/>
 
