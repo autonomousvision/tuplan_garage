@@ -56,6 +56,7 @@ callbacks.visualization_callback.pixel_size=0.25 \
 callbacks.multimodal_visualization_callback.pixel_size=0.25 \
 lightning.trainer.params.max_epochs=$TRAIN_EPOCHS \
 lightning.trainer.params.max_time=null \
+lightning.trainer.checkpoint.resume_training=true \
 data_loader.params.batch_size=$BATCH_SIZE \
 optimizer.lr=$TRAIN_LR \
 lr_scheduler=multistep_lr \
