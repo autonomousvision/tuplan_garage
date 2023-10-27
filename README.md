@@ -10,7 +10,8 @@
 > [Daniel Dauner](https://danieldauner.github.io/)<sup>1,2</sup>, [Marcel Hallgarten](https://mh0797.github.io/)<sup>1,3</sup>, [Andreas Geiger](https://www.cvlibs.net/)<sup>1,2</sup>, and [Kashyap Chitta](https://kashyap7x.github.io/)<sup>1,2</sup>  <br>
 > <sup>1</sup> University of Tübingen, <sup>2</sup> Tübingen AI Center, <sup>3</sup> Robert Bosch GmbH <br>
 > <br>
-> Conference on Robot Learning (CoRL), 2023
+> Conference on Robot Learning (CoRL), 2023 <br>
+> Winner, 2023 nuPlan Challenge
 >
 This repo is intended to serve as a starting point for vehicle motion planning research on [nuPlan](https://github.com/motional/nuplan-devkit). We provide a publicly accessible configuration for validation, comprehensive set of baselines, and pre-trained planning models.
 
