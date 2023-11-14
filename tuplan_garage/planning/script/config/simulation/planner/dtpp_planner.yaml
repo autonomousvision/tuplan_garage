@@ -1,0 +1,7 @@
+dtpp_planner:
+  _target_: tuplan_garage.planning.simulation.planner.dtpp_planner.dtpp_planner.DTPPPlanner
+  _convert_: 'all'
+  _recursive_: false
+
+  model_path: ???
+  model_config: ${model}

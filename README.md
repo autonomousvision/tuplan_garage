@@ -20,6 +20,7 @@ This repo is intended to serve as a starting point for vehicle motion planning r
 https://github.com/autonomousvision/tuplan_garage/assets/22528226/f91e9ce2-ae3d-4f1e-933e-d48ee5762497
 
 ## News
+* **`28 Feb 2025`:** We released an implementation of [DTPP](https://arxiv.org/abs/2310.05885) and [GameFormer](https://arxiv.org/abs/2303.05760). They are based on the official open-source implementations. Thank you to the community for providing the code.
 * **`30 Aug, 2023`:**  Our paper was accepted at [CoRL 2023](https://www.corl2023.org/)!
 * **`20 Aug, 2023`:**  We renamed our repository to "tuPlan Garage" due to trademark conflicts.
 * **`01 Aug, 2023`:**  We released the code for [GC-PGP](https://arxiv.org/abs/2302.07753)!
@@ -78,6 +79,8 @@ Planning results on the proposed *Val14* benchmark. Please refer to the [paper](
 | [GC-PGP](https://arxiv.org/abs/2302.07753v1)        | Graph        | 55         | 59           | 83         | 100        |
 | [PlanCNN](https://arxiv.org/abs/2210.14222)       | Raster       | 72         | 73           | 64         | 43         |
 | [IDM](https://arxiv.org/abs/cond-mat/0002177)           | Centerline   | 77         | 76           | 38         | 27         |
+| [DTPP](https://arxiv.org/abs/2310.05885)          | Polylines        | 62         | 64           | 61         | -         |
+| [GameFormer](https://arxiv.org/abs/2303.05760)    | Polylines        | 81         | 81           | 82         | -         |
 | PDM-Open          | Centerline   | 54         | 50           | **86**     | **7**      |
 | PDM-Closed        | Centerline   | **92**     | **93**       | 42         | 91         |
 | PDM-Hybrid        | Centerline   | **92**     | **93**       | 84         | 96         |

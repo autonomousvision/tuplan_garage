@@ -1,0 +1,20 @@
+# @package _global_
+experiment_name: train_gameformer_model
+py_func: train
+objective_aggregate_mode: sum
+
+defaults:
+  - override /objective:
+      - gameformer_plan_loss
+      - gameformer_k_loss
+  - override /splitter: nuplan
+  - override /model: gameformer_model
+  - override /scenario_filter: train150k_split
+  - override /optimizer: adamw
+  - override /lr_scheduler: multistep_lr
+  - override /training_metric:
+      - avg_displacement_error
+      - final_displacement_error
+      - avg_heading_error
+      - final_heading_error
+

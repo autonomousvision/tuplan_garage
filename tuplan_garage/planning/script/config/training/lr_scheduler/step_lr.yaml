@@ -1,0 +1,5 @@
+_target_: torch.optim.lr_scheduler.StepLR
+_convert_: all
+
+step_size: 5 # decays the learning rate of each parameter group by gamma once every step_size epochs
+gamma: 0.5 # multiplicative factor of learning rate decay

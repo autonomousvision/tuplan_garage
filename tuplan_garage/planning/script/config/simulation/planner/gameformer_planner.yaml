@@ -1,0 +1,13 @@
+gameformer_planner:
+  _target_: tuplan_garage.planning.simulation.planner.gameformer_planner.gameformer_planner.GameFormerPlanner
+  _convert_: 'all'
+  _recursive_: false
+
+  max_path_length: 120  # max lenght of the proposals
+  future_horizon: 8 # future planning horizon
+  step_interval: 0.1 # sampling interval of trajectories
+  target_speed: 13 # target speed [m/s]
+  vehicle_width: 2.297 # vehicle width used to calculate collisions
+
+  model_config: ${model}
+  checkpoint_path: ???

@@ -1,0 +1,4 @@
+k_loss:
+  _target_: tuplan_garage.planning.training.modeling.objectives.gameformer_k_loss.KLoss
+  _convert_: 'all'
+
