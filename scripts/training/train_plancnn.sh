@@ -16,6 +16,7 @@ py_func=train \
 objective=l1_objective \
 job_name=$JOB_NAME \
 scenario_builder=nuplan \
+scenario_filter=train150k_split \
 cache.cache_path=$CACHE_PATH \
 cache.use_cache_without_dataset=$USE_CACHE_WITHOUT_DATASET \
 lightning.trainer.params.max_epochs=$TRAIN_EPOCHS \
