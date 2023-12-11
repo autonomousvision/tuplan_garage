@@ -7,7 +7,7 @@ polyline_length: 20
 proximal_edges_dist_thresh: 4
 proximal_edges_yaw_thresh: 0.785 # approx Pi/4
 agent_node_att_dist_thresh: 10
-use_raster_feature_builder: false
+use_raster_feature_builder: true
 return_graph_map: false
 return_traversal_coordinates: true
 filter_trajectories_by_endpoint: false

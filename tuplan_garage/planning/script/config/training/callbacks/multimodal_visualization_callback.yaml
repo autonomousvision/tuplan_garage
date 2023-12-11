@@ -1,0 +1,8 @@
+multimodal_visualization_callback:
+  _target_: tuplan_garage.planning.training.callbacks.multimodal_visualization_callback.MultimodalVisualizationCallback
+  _convert_: 'all'
+
+  images_per_tile: 8  # number of images per row
+  num_train_tiles: 5  # number of rows of training images
+  num_val_tiles: 5  # number of rows of validation images
+  pixel_size: 0.1  # [m] pixel size of image

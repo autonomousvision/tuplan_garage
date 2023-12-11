@@ -21,3 +21,9 @@ defaults:
       - final_heading_error
       - min_final_displacement_error
       - min_avg_displacement_error
+  - override /callbacks:
+      - learning_rate_monitor_callback
+      - model_checkpoint_callback
+      - time_logging_callback
+      - visualization_callback
+      - multimodal_visualization_callback
