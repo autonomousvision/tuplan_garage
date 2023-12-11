@@ -125,7 +125,7 @@ class PDMFeatureBuilder(AbstractFeatureBuilder):
         past_ego_states = history.ego_states[:-1]
 
         indices = sample_indices_with_time_horizon(
-            self._num_past_poses, self._past_time_horizon, history.sample_interval
+            self._history_sampling.num_poses, self._history_sampling.time_horizon, history.sample_interval
         )
         past_ego_states = [past_ego_states[-idx] for idx in reversed(indices)] + [
             current_ego_state
