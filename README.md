@@ -140,7 +140,7 @@ hydra.searchpath="[pkg://tuplan_garage.planning.script.config.common, pkg://tupl
 You can find exemplary shells scripts in `/scripts/simulation/`
 
 ## Contact
-If you have any questions or suggestions, please feel free to open an issue or contact us (kashyap.chitta@uni-tuebingen.de).
+If you have any questions or suggestions, please feel free to open an issue or contact us (daniel.dauner@uni-tuebingen.de).
 
 
 ## Citation
@@ -158,3 +158,24 @@ If you find tuPlan Garage useful, please consider giving us a star &#127775; and
 
 ## Disclaimer
 tuPlan Garage includes code from Motional's [nuplan-devkit](https://github.com/motional/nuplan-devkit). We are not affiliated with Motional, and the repository is not published, maintained or otherwise related to Motional.
+
+
+## Other resources <a name="otherresources"></a>
+
+<a href="https://twitter.com/AutoVisionGroup" target="_blank">
+    <img alt="Twitter Follow" src="https://img.shields.io/twitter/follow/Awesome Vision Group?style=social&color=brightgreen&logo=twitter" />
+  </a>
+<a href="https://twitter.com/kashyap7x" target="_blank">
+    <img alt="Twitter Follow" src="https://img.shields.io/twitter/follow/Kashyap Chitta?style=social&color=brightgreen&logo=twitter" />
+  </a>
+<a href="https://twitter.com/DanielDauner" target="_blank">
+    <img alt="Twitter Follow" src="https://img.shields.io/twitter/follow/Daniel Dauner?style=social&color=brightgreen&logo=twitter" />
+  </a>
+<a href="https://twitter.com/MHallgarten0797" target="_blank">
+    <img alt="Twitter Follow" src="https://img.shields.io/twitter/follow/Marcel Hallgarten?style=social&color=brightgreen&logo=twitter" />
+  </a>
+
+- [NASVIM](https://github.com/autonomousvision/navsim) | [SLEDGE](https://github.com/autonomousvision/sledge) | [CARLA garage](https://github.com/autonomousvision/carla_garage) | [Survey on E2EAD](https://github.com/OpenDriveLab/End-to-end-Autonomous-Driving)
+- [PlanT](https://github.com/autonomousvision/plant) | [KING](https://github.com/autonomousvision/king) | [TransFuser](https://github.com/autonomousvision/transfuser) | [NEAT](https://github.com/autonomousvision/neat)
+
+<p align="right">(<a href="#top">back to top</a>)</p>
