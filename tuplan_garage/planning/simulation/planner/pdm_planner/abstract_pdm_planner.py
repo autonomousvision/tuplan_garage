@@ -14,6 +14,9 @@ from nuplan.common.maps.maps_datatypes import SemanticMapLayer
 from nuplan.planning.simulation.planner.abstract_planner import AbstractPlanner
 from shapely.geometry import Point
 
+from tuplan_garage.planning.simulation.planner.pdm_planner.observation.pdm_occupancy_map import (
+    PDMOccupancyMap,
+)
 from tuplan_garage.planning.simulation.planner.pdm_planner.utils.graph_search.dijkstra import (
     Dijkstra,
 )
@@ -51,7 +54,7 @@ class AbstractPDMPlanner(AbstractPlanner, ABC):
         self._route_lane_dict: Optional[Dict[str, LaneGraphEdgeMapObject]] = None
 
         self._centerline: Optional[PDMPath] = None
-        self._drivable_area_map: Optional[PDMPath] = None
+        self._drivable_area_map: Optional[PDMOccupancyMap] = None
 
     def _load_route_dicts(self, route_roadblock_ids: List[str]) -> None:
         """
