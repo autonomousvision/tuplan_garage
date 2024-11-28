@@ -506,7 +506,7 @@ class PDMScorer:
             progress = self._centerline.project([start_point, end_point])
             progress_in_meter[proposal_idx] = progress[1] - progress[0]
 
-        self._progress_raw = progress_in_meter
+        self._progress_raw = np.clip(progress_in_meter, a_min=0, a_max=None)
 
     def _calculate_is_comfortable(self) -> None:
         """
