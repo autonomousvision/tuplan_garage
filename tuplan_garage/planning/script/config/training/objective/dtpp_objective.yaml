@@ -1,0 +1,4 @@
+dtpp_objective:
+  _target_: tuplan_garage.planning.training.modeling.objectives.dtpp_objective.DTPPObjective
+  _convert_: 'all'
+

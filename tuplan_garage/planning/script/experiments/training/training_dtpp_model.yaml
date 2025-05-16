@@ -1,0 +1,14 @@
+# @package _global_
+experiment_name: training_dtpp_model
+py_func: train
+objective_aggregate_mode: sum
+
+defaults:
+  - override /objective:
+      - dtpp_objective
+  - override /splitter: nuplan
+  - override /model: dtpp_model
+  - override /scenario_filter: train150k_split
+  - override /optimizer: adamw
+  - override /lr_scheduler: step_lr
+  - override /training_metric: no_training_metrics

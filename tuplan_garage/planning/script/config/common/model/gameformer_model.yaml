@@ -1,0 +1,7 @@
+_target_: tuplan_garage.planning.training.modeling.models.gameformer.gameformer_model.GameFormer
+_convert_: 'all'
+
+encoder_layers: 6
+decoder_levels: 3
+modalities: 6
+neighbors: 10
